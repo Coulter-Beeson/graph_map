@@ -7,51 +7,32 @@
 #include <sys/mman.h>
 #include <string.h>
 
+// List_of_offset_deg_pairs [2N]
+// N lists of D vertices
 
-int N=4029, M=88234, D=4096;
+int N,M,D;
 char* map;
 
-void add_edge(int u, int v, int offset){
-	map[u+1]++;
-	map[2*N+offset+map[u+1]] = v;
+void add_edge(int u, int v){
+	//adds the edges to u and v's lists
+	map[ 2*N + D*map[2*u] + map[2*u+1] ] = v+1;
+	//increments the degrees
+	map[ 2*u+1 ]++;
 }
-
-
-//TODO make circular
-struct queue{
-	int front;
-	int end;
-	int* array;
-};
-
-void push(struct queue *Q, int u, int v){
-	Q->end += 2;
-	Q->array[Q->end] = u;
-	Q->array[Q->end+1] = v;
-}
-
-int pop(struct queue *Q){
-	int r = Q->array[Q->front+1];
-	Q->front += 2;
-}
-
-
-int head(struct queue *Q){
-	return Q->array[0];
-}
-
-
 
 int main(int argc, char *argv[]) {
 
 	//Expects a name of an file
-	if( argc!=2){
-		perror("wrong number of arguments");
+	if( argc!=5){
+		perror("fd N M D");
 		exit(EXIT_FAILURE);
 	}
 
 	int fd;
 	fd = open(argv[1], O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+	N = atoi(argv[2]);
+	M = atoi(argv[3]);
+	D = atoi(argv[4]);
 
 	if (fd == -1){
 		perror("error on opening file");
@@ -82,34 +63,21 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	
-	int c,u,v,count=0;
-
-	struct queue *Q;
-
-	int* arr = malloc(N*sizeof(int));
-
-	Q->array = arr;
+	int c,u,v, count=0;
 
 	for(int i=0; i<N; i++){
+		map[2*i]=i;
+		map[2*i+1]=0;
+	}
+	for(int i=0; i<N*D; i++){
+		map[2*N + i - 1] = 0;
+	}
+
+	for(int i=0; i<M; i++){
 		scanf("%d", &u);
 		scanf("%d", &v);
 
-		push(Q,v,u);
-	
-		if(c != u){
-
-			//add all the back edges
-			while(head(Q) == c){
-				add_edge(c,pop(Q),count);
-				count++;	
-			} 
-			map[u]=i; // set the offset for u's list
-			c=u;
-
-		} 
-
-		add_edge(u,v,count);
-		count++;	
+		add_edge(u,v);	
 	}
 
 	if (msync(map, length, MS_SYNC) == -1){

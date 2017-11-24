@@ -24,10 +24,10 @@ int main(int argc, char *argv[]){
 
 	//Print Offset Degree pairs
 	for(int i=0; i<N ; i++){
-		printf("%d",i);
+		printf("%d",i+1);
 		printf("(");
 		o = getchar();
-		printf("%d", o);
+		printf("%d", o+1);
 		printf(",");
 		d = getchar();
 		printf("%d",d);
@@ -41,11 +41,16 @@ int main(int argc, char *argv[]){
 	//Print the Adjacency lists
 	for(int i=0; i<N*D ; i++){
 		if( i%D==0 ){
-			printf("%d [", i);
+			printf("%d [", i/D+1);
 		}
 
 		v = getchar();
-		printf("%d", v);
+		if(v == 0){
+			 printf(" ");
+		}
+		else{
+			 printf("%d", v);
+		}
 
 		if( i%D==D-1 ){
 			printf("]");
