@@ -15,9 +15,17 @@
 //of the correct size`
 struct graph* Graph(int fd){
 
+	struct stat st;
+	fstat(fd, &st);
+
 	//TODO add error checking to see if the file is an existing
-	int length = 0;
+	int length = st.st_size;
 	//Open the map
+
+	if(length == 0){
+		perror("empty file, requires an existing graph");
+		exit(EXIT_FAILURE);
+	}
 
 	char* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
@@ -73,8 +81,6 @@ int get_deg(struct graph* g, int u){
 void inc_deg(struct graph* g, int u){
 	g->g[3 + 2*u+1]++;
 }
-
-
 
 int main(int argc, char* argv[]){
 
