@@ -23,7 +23,7 @@ void add_edge(int u, int v){
 int main(int argc, char *argv[]) {
 
 	//Expects a name of an file
-	if( argc!=5){
+	if(argc!=5){
 		perror("fd N M D");
 		exit(EXIT_FAILURE);
 	}
