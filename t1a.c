@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	//open file to write to
-	FILE *fw = fopen("nmd_2n_g.txt", "w");
+	FILE *fw = fopen("edgelistonly.txt", "w");
 	if (fw == NULL) {
 		printf("Error opening file!\n");
 		exit(1);
@@ -46,8 +46,15 @@ int main(int argc, char *argv[]) {
 			n = v;
 		}
 	}
-	fprintf(fw, "N = %d\n", n);
-	fprintf(fw, "M = %d\n", m);
+	
+	FILE *fq = fopen("nmd_2n_el.txt", "w");
+	if(fq == NULL) {
+		printf("Error opening file!\n");
+		exit(1);
+	}
+	
+	fprintf(fq, "%d ", n);
+	fprintf(fq, "%d ", m);
 	
 	int nodeArray[n+1];
 	int maxD = 0;
@@ -75,14 +82,25 @@ int main(int argc, char *argv[]) {
 			maxD = nodeArray[i];
 		}	
 		
-		fprintf(fw, "Degree of node %d is %d\n", i, nodeArray[i]);
+		fprintf(fw, "%d,%d ", i, nodeArray[i]);
 	
 	}
 	
-	fprintf(fw, "MaxD = %d\n", maxD);
+	fprintf(fq, "%d\n", maxD);
+	for(i = 1; i < n+1; i++) {
+		
+		fprintf(fq, "%d,%d ", i, nodeArray[i]);
+	
+	}
+	fprintf(fq, "\n");
+	rewind(fd);
+	while(fscanf(fd, "%d %d", &u, &v)==2){
+		fprintf(fq, "%d %d\n", u, v);
+	}
 	
 	fclose(fd);
 	fclose(fw);
+	fclose(fq);
 
 	exit(EXIT_SUCCESS);
 	
