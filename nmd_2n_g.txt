@@ -8,5 +8,16 @@
 7 1
 8 4
 9 5
+2 5
 N = 9
-M = 10
+M = 11
+Degree of node 1 is 3
+Degree of node 2 is 3
+Degree of node 3 is 3
+Degree of node 4 is 2
+Degree of node 5 is 4
+Degree of node 6 is 1
+Degree of node 7 is 2
+Degree of node 8 is 1
+Degree of node 9 is 3
+MaxD = 4

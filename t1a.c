@@ -48,6 +48,39 @@ int main(int argc, char *argv[]) {
 	}
 	fprintf(fw, "N = %d\n", n);
 	fprintf(fw, "M = %d\n", m);
+	
+	int nodeArray[n+1];
+	int maxD = 0;
+	
+	int j=0;
+	for(j=0; j<=n+1; j++) {
+		nodeArray[j]=0;
+	}
+	
+	rewind(fd);
+	int a, b;
+	while(fscanf(fd, "%d %d", &a, &b)==2) {
+		printf("Before ++ Node %d has degree %d\n", a, nodeArray[a]);
+		printf("Before ++ Node %d has degree %d\n", b, nodeArray[b]);
+		nodeArray[a]++;
+		nodeArray[b]++;
+		printf("After ++ Node %d has degree %d\n", a, nodeArray[a]);
+		printf("After ++ Node %d has degree %d\n", b, nodeArray[b]);
+	
+	}
+	int i=0;
+	for(i = 1; i < n+1; i++) {
+		
+		if(nodeArray[i]>maxD){
+			maxD = nodeArray[i];
+		}	
+		
+		fprintf(fw, "Degree of node %d is %d\n", i, nodeArray[i]);
+	
+	}
+	
+	fprintf(fw, "MaxD = %d\n", maxD);
+	
 	fclose(fd);
 	fclose(fw);
 
