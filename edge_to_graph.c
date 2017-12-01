@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	int fd;
-	fd = open(argv[1], O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+	fd = open(argv[5], O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
 	N = atoi(argv[2]);
 	printf("N = %d\n", N);
 	M = atoi(argv[3]);
