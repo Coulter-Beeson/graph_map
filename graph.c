@@ -70,8 +70,8 @@ bool get_edge(struct graph* g, int u, int v){
 	int d = get_deg(g,u);
 	int o = get_off(g,u);
 
-	int* edges = get_edge_list(g,u);
-
+	int* edges = get_nbrs(g,u);
+	
 	for(int i=0; i<d; i++){
 		if(edges[i] == v){
 			return true;
@@ -81,22 +81,29 @@ bool get_edge(struct graph* g, int u, int v){
 	return false;
 }
 
-int* get_edge_list(struct graph* g, int u){
+//INcreases the edge count in both the object and the file
+void inc_edge_count(struct graph* g, int u, int v){
+	g->M++;
+	g->g[1]++;
+}
+
+//Returns an adjacency list for the given node u
+int* get_nbrs(struct graph* g, int u){
 	int o = get_off(g,u);
 	return (int*)g->g[ g->off + g->D*o ];
 }
 
+//Adds the edge u,v to g
 void add_edge(struct graph* g, int u, int v){
 	
-	if(get_edge(g,u,v)) return;
+	//This makes it safe, but slow
+	//if(get_edge(g,u,v)) return;
 
-	inc_deg(g,u);
-	
-	int n = g->N;
-	int d = g->D;
-	int* edges = get_edge_list(g,u);
+	int* edges = get_nbrs(g,u);
 
 	edges[get_deg(g,u)] = v;
+	inc_deg(g,u);
+	inc_edge_count(g,u,v);
 }
 
 int get_off(struct graph* g, int u){
