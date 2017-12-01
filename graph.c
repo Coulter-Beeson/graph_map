@@ -126,7 +126,7 @@ void print_node(struct graph* g, int u){
 //prints a nodes adjacency list
 void print_edge_list(struct graph* g, int u){
 	int d = get_deg(g,u);
-	int* el = get_edge_list(g,u);
+	int* el = get_nbrs(g,u);
 
 	printf("%d: [", u);
 
