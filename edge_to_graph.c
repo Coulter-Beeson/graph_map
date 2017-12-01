@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 #include <string.h>
 #include <math.h>
+#include "graph.h"
 
 // List_of_offset_deg_pairs [2N]
 // N lists of D vertices
@@ -32,8 +33,8 @@ char* map;
 int main(int argc, char *argv[]) {
 
 	//Expects a name of an file
-	if(argc!=5){
-		perror("fd N M D");
+	if(argc!=6){
+		perror("fe N M D fd");
 		exit(EXIT_FAILURE);
 	}
 
@@ -103,42 +104,35 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
  
-	//Open the map
+	/*Open the map
 	map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(map == MAP_FAILED){
 		close(fd);
 		perror("Error mapping file");
 		exit(EXIT_FAILURE);
+	}*/
+	
+	//int c,u,v, count=0;
+	
+	struct graph eGraph = {fd, N, M, D_up, num_hpages};
+	
+	FILE *fe;
+	fe = fopen(argv[1], "r"); 
+	if (fe == NULL){
+		perror("error on opening file");
+		return(-1);
 	}
 	
-	int c,u,v, count=0;
-	/*
-	for(int i=0; i<N; i++){
-		map[2*i]=i;
-		map[2*i+1]=0;
+	int u,v;
+	while(fscanf(fe, "%d %d", &u, &v)==2){
+		
+		add_edge(*eGraph, u, v);
+		
 	}
-	for(int i=0; i<N*D; i++){
-		map[2*N + i - 1] = 0;
-	}
-
-	for(int i=0; i<M; i++){
-		scanf("%d", &u);
-		scanf("%d", &v);
-
-		add_edge(u,v);	
-	}
-
-	if (msync(map, length, MS_SYNC) == -1){
-		perror("couldn't sync to disk");
-	}
-
-	if (munmap(map, length) == -1){
-		close(fd);
-		perror("Error unmappin");
-		exit(EXIT_FAILURE);
-	}*/
-
+	
+	
+	fclose(fe);
 	close(fd);
 
 	exit(EXIT_SUCCESS);
