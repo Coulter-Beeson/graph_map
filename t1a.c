@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 			maxD = nodeArray[i];
 		}	
 		
-		fprintf(fw, "%d,%d ", i, nodeArray[i]);
+		//fprintf(fw, "%d,%d ", i, nodeArray[i]);
 	
 	}
 	
