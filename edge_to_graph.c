@@ -97,25 +97,44 @@ int main(int argc, char *argv[]) {
 	
 	printf("The length of the file is %d, requiring %d pages\n", length, num_tpages);
 
-	//Needs to have something written so add an empty string 
+	//Needs to have something written so add an empty string
+	/*
 	if (write(fd, "", 1) == -1){
 		close(fd);
 		perror("Error on writing last byte of file");
 		exit(EXIT_FAILURE);
-	}
+	}*/
  
-	/*Open the map
+	//Open the map
 	map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(map == MAP_FAILED){
 		close(fd);
 		perror("Error mapping file");
 		exit(EXIT_FAILURE);
-	}*/
+	}
 	
 	//int c,u,v, count=0;
 	
-	struct graph eGraph = {fd, N, M, D_up, num_hpages};
+	if (write(fd, &N, 4) != 4) {
+        close(fd);
+		perror("Error on writing N to file");
+		exit(EXIT_FAILURE);
+	}
+	
+	if (write(fd, "0", 4) != 4) {
+        close(fd);
+		perror("Error on writing M to file");
+		exit(EXIT_FAILURE);
+	}
+	
+	if (write(fd, &D_up, 4) != 4) {
+        close(fd);
+		perror("Error on writing D to file");
+		exit(EXIT_FAILURE);
+	}
+	
+	struct graph* eGraph = Graph(fd);
 	
 	FILE *fe;
 	fe = fopen(argv[1], "r"); 
@@ -127,7 +146,7 @@ int main(int argc, char *argv[]) {
 	int u,v;
 	while(fscanf(fe, "%d %d", &u, &v)==2){
 		
-		add_edge(*eGraph, u, v);
+		add_edge(eGraph, u, v);
 		
 	}
 	
