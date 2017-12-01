@@ -150,6 +150,8 @@ int main(int argc, char *argv[]) {
 		
 	}
 	
+	print_graph(my_graph);
+	
 	
 	fclose(fe);
 	close(fd);
