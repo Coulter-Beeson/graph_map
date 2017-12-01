@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	
-	struct graph* eGraph = Graph(fd);
+	struct graph* my_graph = Graph(fd);
 	
 	FILE *fe;
 	fe = fopen(argv[1], "r"); 
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 	int u,v;
 	while(fscanf(fe, "%d %d", &u, &v)==2){
 		
-		add_edge(eGraph, u, v);
+		add_edge(my_graph, u, v);
 		
 	}
 	
