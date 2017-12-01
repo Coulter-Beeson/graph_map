@@ -25,5 +25,6 @@ void inc_edge_count(struct graph* g, int u, int v);
 void print_edge_list(struct graph* g, int u);
 void print_node(struct graph* g, int u);
 void print_graph(struct graph* g);
+void close_graph(struct graph* g);
 
 #endif // GRAPH_H_
