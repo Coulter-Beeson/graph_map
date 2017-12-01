@@ -175,7 +175,7 @@ int main(int argc, char* argv[]){
 
 	//=======================Test Cases========================
 
-	printf("Beginging test case %n", test_case_count); 
+	printf("Beginning test case %n", test_case_count); 
 
 	print_graph(G);
 

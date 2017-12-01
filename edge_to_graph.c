@@ -149,11 +149,10 @@ int main(int argc, char *argv[]) {
 		add_edge(my_graph, u, v);
 		
 	}
-	
-	print_graph(my_graph);
-	
+
 	
 	fclose(fe);
+	close_graph(my_graph);
 	close(fd);
 
 	exit(EXIT_SUCCESS);
