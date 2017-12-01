@@ -5,17 +5,22 @@
 
 struct graph{
 	char* g; //The underlying mmap'd file
-	int N;
-	int M;
-	int D;
+	int N; // The number of nodes
+	int M; // The number of edges
+	int D; // Upper bound on maximum degree
+	int off; // number of pages in header
 };
 
 struct graph* Graph(int fd);
 
 bool get_edge(struct graph* g, int u, int v);
-void add_edge(struct graph* g, int u, int v); 
+void add_edge(struct graph* g, int u, int v);
+int* get_edge_list(struct graph*, int u);
 int get_off(struct graph* g, int u);
 int get_deg(struct graph* g, int u);
 void inc_deg(struct graph* g, int u);
+
+void print_edge_list(struct graph* g, int u);
+void print_node(struct graph* g, int u);
 
 #endif // GRAPH_H_

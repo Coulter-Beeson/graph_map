@@ -38,24 +38,52 @@ struct graph* Graph(int fd){
 	struct graph *g = malloc(sizeof(struct graph));
 
 	g->g = map;
-	g->N = map[0];
-	g->M = map[1];
-	g->D = map[2];
+	g->N = map[0];	//Number of nodes
+	g->M = map[1];	//Number of edges
+	g->D = map[2];	//Upper bound on max degree
+
+	long page_size = sysconf(_SC_PAGESIZE);
+	
+	//The off set from which the adjacency lists start
+	g->off = ((4*(3+2*g->N)/page_size)+1)*page_size;
 
 	return g;
+}
+
+//Closes the graph file and syncs the memory
+//This is required otherwise you're file will not be correct!
+void close_graph(struct graph* g){
+	
+	int length = g->off + g->N*g->D;
+
+	if (msync(g->g, length, MS_SYNC) == -1){
+		perror("couldn't sync to disk");
+	}
+
+	if (munmap(g->g, length) == -1){
+		perror("Error unmappin");
+		exit(EXIT_FAILURE);
+	}
 }
 
 bool get_edge(struct graph* g, int u, int v){
 	int d = get_deg(g,u);
 	int o = get_off(g,u);
 
+	int* edges = get_edge_list(g,u);
+
 	for(int i=0; i<d; i++){
-		if(g->g[3 + 2*g->N + g->D*o + i] == v){
+		if(edges[i] == v){
 			return true;
 		}
 	}
 
 	return false;
+}
+
+int* get_edge_list(struct graph* g, int u){
+	int o = get_off(g,u);
+	return (int*)g->g[ g->off + g->D*o ];
 }
 
 void add_edge(struct graph* g, int u, int v){
@@ -66,8 +94,9 @@ void add_edge(struct graph* g, int u, int v){
 	
 	int n = g->N;
 	int d = g->D;
+	int* edges = get_edge_list(g,u);
 
-	g->g[3 + 2*n + d*get_off(g,u) + get_deg(g,u)] = v;
+	edges[get_deg(g,u)] = v;
 }
 
 int get_off(struct graph* g, int u){
@@ -80,6 +109,39 @@ int get_deg(struct graph* g, int u){
 
 void inc_deg(struct graph* g, int u){
 	g->g[3 + 2*u+1]++;
+}
+
+//prints a single node's offset and degree
+void print_node(struct graph* g, int u){
+	printf("(%d,%d)",get_off(g,u),get_deg(g,u));
+}
+
+//prints a nodes adjacency list
+void print_edge_list(struct graph* g, int u){
+	int d = get_deg(g,u);
+	int* el = get_edge_list(g,u);
+
+	printf("%d: [", u);
+
+	for(int i=0; i<d; i++){
+		printf("%d",el[i]);
+		if(i != d-1) printf(",");
+	}
+	
+	printf("]");
+}
+
+void print_graph(struct graph* g){
+	for(int i=0; i<g->N; i++){
+		print_node(g,i);
+	}
+	printf("\n");
+
+	for(int i=0; i<g->N; i++){
+		print_edge_list(g,i);
+		printf("\n");
+	}
+
 }
 
 int main(int argc, char* argv[]){
@@ -98,6 +160,8 @@ int main(int argc, char* argv[]){
 		exit(EXIT_FAILURE);
 	}
 
+	//TODO hardcode test graph
+
 	//create test graph
 	struct graph* G = Graph(fd);	
 	int test_case_count = 0;
@@ -106,21 +170,14 @@ int main(int argc, char* argv[]){
 
 	printf("Beginging test case %n", test_case_count); 
 
+	print_graph(G);
+
 	//test add_edge
 
 	//TODO add a graph clsoe function
 	//TODO figure out length 
-	int length = 0;
-	if (msync(G->g, length, MS_SYNC) == -1){
-		perror("couldn't sync to disk");
-	}
 
-	if (munmap(G->g, length) == -1){
-		close(fd);
-		perror("Error unmappin");
-		exit(EXIT_FAILURE);
-	}
-
+	close_graph(G);
 	close(fd);
 
 	exit(EXIT_SUCCESS);	
