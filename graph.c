@@ -15,11 +15,15 @@
 //of the correct size`
 struct graph* Graph(int fd){
 
+	printf("creating graph\n");
+
 	struct stat st;
 	fstat(fd, &st);
 
 	//TODO add error checking to see if the file is an existing
 	int length = st.st_size;
+
+	printf("the length of the file is %d \n",length);
 	//Open the map
 
 	if(length == 0){
@@ -27,6 +31,7 @@ struct graph* Graph(int fd){
 		exit(EXIT_FAILURE);
 	}
 
+	printf("mapping file");
 	char* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(map == MAP_FAILED){
@@ -35,18 +40,24 @@ struct graph* Graph(int fd){
 		exit(EXIT_FAILURE);
 	}
 
+	printf("allocating graph object\n");
 	struct graph *g = malloc(sizeof(struct graph));
 
+	printf("assigning member variables\n");
 	g->g = map;
 	g->N = map[0];	//Number of nodes
 	g->M = map[1];	//Number of edges
 	g->D = map[2];	//Upper bound on max degree
 
+
+
 	long page_size = sysconf(_SC_PAGESIZE);
 	
+	printf("page size is : %d now calculate offset\n",page_size);
 	//The off set from which the adjacency lists start
 	g->off = ((4*(3+2*g->N)/page_size)+1)*page_size;
 
+	printf("returning graph\n");
 	return g;
 }
 
@@ -153,11 +164,17 @@ void print_edge_list(struct graph* g, int u){
 }
 
 void print_graph(struct graph* g){
+	printf("printing graph \n");
+
+	printf("N:%d,M:%d,D:%d)",g->N,g->M,g->D);
+
+	printf("printing nodes\n");
 	for(int i=0; i<g->N; i++){
 		print_node(g,i);
 	}
 	printf("\n");
 
+	printf("print edge lists\n");
 	for(int i=0; i<g->N; i++){
 		print_edge_list(g,i);
 		printf("\n");
@@ -167,11 +184,17 @@ void print_graph(struct graph* g){
 
 int main(int argc, char* argv[]){
 
+	setvbuf (stdout, NULL, _IONBF, 0);
+
+	printf("start\n");
+
 	//Expects a name of an file
 	if(argc != 2){
 		perror("takes a file pointer to a graph");
 		exit(EXIT_FAILURE);
 	}
+
+	printf("Opening file\n");
 
 	int fd;
 	fd = open(argv[1], O_RDWR, (mode_t)0600);
@@ -183,13 +206,14 @@ int main(int argc, char* argv[]){
 
 	//TODO hardcode test graph
 
+	printf("creating graph\n");
 	//create test graph
 	struct graph* G = Graph(fd);	
 	int test_case_count = 0;
 
 	//=======================Test Cases========================
 
-	printf("Beginning test case %n", test_case_count); 
+	printf("Beginning test case %d", test_case_count); 
 
 	print_graph(G);
 
