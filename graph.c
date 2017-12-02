@@ -96,51 +96,51 @@ bool get_edge(struct graph* g, int u, int v){
 
 //INcreases the edge count in both the object and the file
 void inc_edge_count(struct graph* g, int u, int v){
-	printf("in inc_edge_count\n");
+	//printf("in inc_edge_count\n");
 	g->M++;
-	printf("m inced\n");
+	//printf("m inced\n");
 	g->g[1]++;
-	printf("finished incrementing edge count\n");
+	//printf("finished incrementing edge count\n");
 }
 
 //Returns an adjacency list for the given node u
 int* get_nbrs(struct graph* g, int u){
-	printf("in get_nbrs\n");
+	//printf("in get_nbrs\n");
 	int o = get_off(g,u);
-	printf("out of get_off\n");
+	//printf("out of get_off\n");
 	return &g->g[ g->off + g->D*o ];
 }
 
 //Adds the edge u,v to g
 void add_edge(struct graph* g, int u, int v){
-	printf("Adding edge %d %d in add_edge\n", u,v);
+	//printf("Adding edge %d %d in add_edge\n", u,v);
 	//This makes it safe, but slow
 	//if(get_edge(g,u,v)) return;
 
 	int* edges = get_nbrs(g,u);
-	printf("get_nbrs\n");
+	//printf("get_nbrs\n");
 	edges[get_deg(g,u)] = v;
-	printf("get_deg\n");
+	//printf("get_deg\n");
 	inc_deg(g,u);
-	printf("inc_deg\n");
+	//printf("inc_deg\n");
 	inc_edge_count(g,u,v);
-	printf("edges added\n");
+	//printf("edges added\n");
 }
 
 int get_off(struct graph* g, int u){
-	printf("offset is being calculated\n");
+	//printf("offset is being calculated\n");
 	return g->g[3 + 2*u];
 }
 
 int get_deg(struct graph* g, int u){
-	printf("in get_deg\n");
+	//printf("in get_deg\n");
 	return g->g[3 + 2*u+1];
 }
 
 void inc_deg(struct graph* g, int u){
-	printf("in inc_deg\n");
+	//printf("in inc_deg\n");
 	g->g[3 + 2*u+1]++;
-	printf("finished increasing deg\n");
+	//printf("finished increasing deg\n");
 }
 
 //prints a single node's offset and degree
@@ -168,13 +168,13 @@ void print_graph(struct graph* g){
 
 	printf("N:%d,M:%d,D:%d)",g->N,g->M,g->D);
 
-	printf("printing nodes\n");
+	//printf("printing nodes\n");
 	for(int i=0; i<g->N; i++){
 		print_node(g,i);
 	}
 	printf("\n");
 
-	printf("print edge lists\n");
+	//printf("print edge lists\n");
 	for(int i=0; i<g->N; i++){
 		print_edge_list(g,i);
 		printf("\n");

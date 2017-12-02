@@ -119,26 +119,44 @@ int main(int argc, char *argv[]) {
 	}
 	
 	//int c,u,v, count=0;
+
+	FILE* fp = fdopen(fd,"r+");
+
+	rewind(fp);
 	
-	if (write(fd, &N, 4) != 4) {
-        close(fd);
+	if (fprintf(fp,"%c" ,(char)N) < 0) {
+        	close(fd);
 		perror("Error on writing N to file");
 		exit(EXIT_FAILURE);
 	} else {printf("wrote %d to file\n", N);}
 	
-	if (write(fd, "0", 4) != 4) {
-        close(fd);
+	if (fprintf(fp,"%c",(char)0) < 0 ) {
+        	close(fd);
 		perror("Error on writing M to file");
 		exit(EXIT_FAILURE);
 	} else {printf("wrote 0 to file\n");}
 	
-	if (write(fd, &D_up, 4) != 4) {
-        close(fd);
+	if ( fprintf(fp,"%c",(char)D_up) < 0 ) {
+        	close(fd);
 		perror("Error on writing D to file");
 		exit(EXIT_FAILURE);
 	} else {printf("wrote %d to file\n", D_up);}
 	
 	//TODO print the whole file here and look at it?
+
+	printf("printing back the file should have NMD\n");
+
+	rewind(fp);
+
+	int c;
+	c = getc(fp);
+	printf("N:%d\n",c);
+
+	c = getc(fp);
+	printf("M:%d\n",c);
+
+	c = getc(fp);
+	printf("D:%d\n",c);
 
 	struct graph* my_graph = Graph(fd);
 	
