@@ -166,15 +166,24 @@ int main(int argc, char *argv[]) {
 		perror("error on opening file");
 		return(-1);
 	}
+
+	for(int i=0; i<my_graph->N ;i++){
+		my_graph->g[3+2*i]=i;
+		my_graph->g[3+2*i+1]=0;
+	}
+
+	print_graph(my_graph);
 	
 	int u,v;
 	while(fscanf(fe, "%d %d", &u, &v)==2){
 		printf("Adding edge %d %d in e2g\n", u, v);
 		add_edge(my_graph, u, v);
-		
+		print_graph(my_graph);	
 	}
 
 	
+	print_graph(my_graph);
+
 	fclose(fe);
 	close_graph(my_graph);
 	close(fd);

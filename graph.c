@@ -49,8 +49,6 @@ struct graph* Graph(int fd){
 	g->M = map[1];	//Number of edges
 	g->D = map[2];	//Upper bound on max degree
 
-
-
 	long page_size = sysconf(_SC_PAGESIZE);
 	
 	printf("page size is : %d now calculate offset\n",page_size);
@@ -117,30 +115,31 @@ void add_edge(struct graph* g, int u, int v){
 	//This makes it safe, but slow
 	//if(get_edge(g,u,v)) return;
 
-	int* edges = get_nbrs(g,u);
-	//printf("get_nbrs\n");
-	edges[get_deg(g,u)] = v;
-	//printf("get_deg\n");
+	int* edges_u = get_nbrs(g,u);
+	int* edges_v = get_nbrs(g,v);
+
+	edges_u[get_deg(g,u)] = v;
+	edges_v[get_deg(g,v)] = u;
+
 	inc_deg(g,u);
-	//printf("inc_deg\n");
+	inc_deg(g,v);
+
 	inc_edge_count(g,u,v);
-	//printf("edges added\n");
+
 }
 
 int get_off(struct graph* g, int u){
 	//printf("offset is being calculated\n");
-	return g->g[3 + 2*u];
+	return g->g[3 + 2*(u-1)];
 }
 
 int get_deg(struct graph* g, int u){
 	//printf("in get_deg\n");
-	return g->g[3 + 2*u+1];
+	return g->g[3 + 2*(u-1)+1];
 }
 
 void inc_deg(struct graph* g, int u){
-	//printf("in inc_deg\n");
-	g->g[3 + 2*u+1]++;
-	//printf("finished increasing deg\n");
+	g->g[3 + 2*(u-1)+1] += 1;
 }
 
 //prints a single node's offset and degree
@@ -155,8 +154,14 @@ void print_edge_list(struct graph* g, int u){
 
 	printf("%d: [", u);
 
-	for(int i=0; i<d; i++){
-		printf("%d",el[i]);
+	for(int i=0; i<g->D; i++){
+		
+		if(el[i] == 0){
+			printf(" ");
+		}
+		else{
+			printf("%d",el[i]);
+		}
 		if(i != d-1) printf(",");
 	}
 	
@@ -166,22 +171,23 @@ void print_edge_list(struct graph* g, int u){
 void print_graph(struct graph* g){
 	printf("printing graph \n");
 
-	printf("N:%d,M:%d,D:%d)",g->N,g->M,g->D);
+	printf("N:%d,M:%d,D:%d\n",g->N,g->M,g->D);
 
 	//printf("printing nodes\n");
-	for(int i=0; i<g->N; i++){
+	for(int i=1; i<=g->N; i++){
+		printf("%d",i);
 		print_node(g,i);
 	}
 	printf("\n");
 
 	//printf("print edge lists\n");
-	for(int i=0; i<g->N; i++){
+	for(int i=1; i<=g->N; i++){
 		print_edge_list(g,i);
 		printf("\n");
 	}
 
 }
-
+/*
 int main(int argc, char* argv[]){
 
 	setvbuf (stdout, NULL, _IONBF, 0);
@@ -213,7 +219,7 @@ int main(int argc, char* argv[]){
 
 	//=======================Test Cases========================
 
-	printf("Beginning test case %d", test_case_count); 
+	printf("Beginning test case %d\n", test_case_count); 
 
 	print_graph(G);
 
@@ -226,4 +232,4 @@ int main(int argc, char* argv[]){
 	close(fd);
 
 	exit(EXIT_SUCCESS);	
-}
+}*/
