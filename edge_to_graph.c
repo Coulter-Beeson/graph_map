@@ -52,7 +52,11 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	int PAGE_SIZE = 4096;
+	//int PAGE_SIZE = 4096;
+	
+	//TODO Replaced this to get the page size
+	long PAGE_SIZE = sysconf(_SC_PAGESIZE);
+
 	int header_size = 20 + 8*N; //N, M, D(3) burn (2) [o,d]*N in 
 	printf("The header is (%d x 2 + 5) X 4 = %d bytes\n", N, header_size);
 	printf("The pages are %d bytes\n", PAGE_SIZE);
@@ -65,7 +69,7 @@ int main(int argc, char *argv[]) {
 	int num_hpages = ceil(hpages);
 	printf("Which is %d integer header pages\n", num_hpages);
 	
-	int padding = (num_hpages * 4096) - header_size; //in bytes
+	int padding = (num_hpages * PAGE_SIZE) - header_size; //in bytes
 	
 	
 	int D_up;
@@ -78,7 +82,7 @@ int main(int argc, char *argv[]) {
 
 	
 	//stretch the file in bytes
-	size_t length = num_hpages*4096 + 4*D_up + node_data_size; // N, M, D; [n,o]*N + padding; burn row [N][D]
+	size_t length = num_hpages*PAGE_SIZE + 4*D_up + node_data_size; // N, M, D; [n,o]*N + padding; burn row [N][D]
 	if (lseek(fd, length+1, SEEK_SET) == -1){
 		close(fd);
 		perror("Error on lseek call to stretch the file");
