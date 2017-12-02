@@ -12,12 +12,8 @@
 #include <sys/types.h>
 #include <string.h>
 
-#define waiting 1
-#define visited 2
-
 struct vertex{
 	int num;
-	int state;
 	struct vertex* next;
 };
 
@@ -27,9 +23,6 @@ struct queue
   struct vertex* tail;
 };
 
-struct visitedList{
-	
-}
 
 bool queue_add_element( struct queue*, const int);
 bool queue_remove_element( struct queue*);
@@ -37,7 +30,8 @@ struct queue* queue_new(void);
 struct queue* queue_free( struct queue* );
 void queue_print( const struct queue* );
 void queue_print_element(const struct vertex* );
- 
+bool node_visted(struct queue*, const int);
+
  
 int main(int argc, char* argv[])
 {
@@ -55,50 +49,60 @@ int main(int argc, char* argv[])
 	}
 
 	//create test graph
-	struct graph* G = Graph(fd);	
-    struct queue*  q = NULL;
-	int initial_node= 0; //say for now, later take it from cmd line
-  
-	q = queue_new();
-	//setup initial node as vertex object
+	struct graph* G = Graph(fd);	 //actually get graph object
+    struct queue* q = queue_new();
+	struct queue* visited= queue_new();
+	int curr_node= 0; //TODO take it as I/P from cmd line
+	//TODO: check if node is valid node..ie  it actually exists
+	queue_add_element(q, curr_node);//add node to q. 
 	
-    struct vertex* v = malloc( 1 * sizeof(*v) );
-	v->num= initial_node;
-	v->state= waiting;
-	int* node = get_neighbors(initial_node);
-    while( node != NULL && v->state != visited){
-		int degree = getdegree(G, node)
-		v->state= visited
-		for(int i=0;i< degree;i=i+1){
-		  //add elements to Q. 
-		  queue_add_element(q,&node)
-		}
-		node=queue(getfirstelement)
-		int* = get_neighbors(node)
-	}
-    
-  */
+	
   
-  list_add_element(mt, 1);
-  list_add_element(mt, 2);
-  list_add_element(mt, 3);
-  list_add_element(mt, 4); 
-   
-  list_print(mt);
- 
-  list_remove_element(mt);
-  list_print(mt);
- 
-  list_free(mt);   /* always remember to free() the malloc()ed memory */
-  free(mt);        /* free() if list is kept separate from free()ing the structure, I think its a good design */
-  mt = NULL;      /* after free() always set that pointer to NULL, C will run havon on you if you try to use a dangling pointer */
- 
-  list_print(mt);
- 
-  return 0;
+	   //get first element of queue. get its neighbors n add to queue if not already visited. add that node to visited
+	   while(q->head != null)
+	   {
+			curr_node  = q->head->num;
+			if(!node_visited(curr_node)){
+				int* nbrs = get_nbrs(G, curr_node);
+				if(nbrs != NULL){
+					int degree = get_deg(G, curr_node)
+					for(int i=0;i< degree;i=i+1)
+					{
+						queue_add_element(q, nbrs[i])
+						//TODO: watch out for array index out of bound
+					}
+				}
+				queue_add_element(visited, curr_node);
+			}
+			queue_remove_element(q); //removes the head
+	   }
+	
+		
+	//queue_print(visited);
+ 	queue_free(q);   /* always remember to free() the malloc()ed memory */
+	queue_free(visited); 
+	free(q);        /* free() if list is kept separate from free()ing the structure, I think its a good design */
+	free(visited)
+	q = NULL;      /* after free() always set that pointer to NULL, prevents dangling pointer */
+	visited = NULL
+	return 0;
 }
  
- 
+bool node_visted(struct queue* list, const int val)
+{
+	if(list!= NULL)
+	{
+		struct vertex* v= list->head;
+		do{
+			if( v->num == val)
+				return true;
+			v = v->next;
+		}
+		while(v != NULL);
+	}
+	return false;
+	
+}
 
 bool queue_add_element(struct queue* s, const int i)
 {
@@ -143,7 +147,7 @@ bool queue_add_element(struct queue* s, const int i)
 }
  
 /* This is a queue and it is FIFO, so we will always remove the first element */
-bool list_remove_element( struct queue* s )
+bool queue_remove_element( struct queue* s )
 {
   struct vertex* h = NULL;
   struct vertex* p = NULL;
@@ -227,3 +231,4 @@ void queue_print_element(const struct vertex* p )
       printf("Can not print NULL struct \n");
     }
 }
+
