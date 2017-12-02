@@ -120,19 +120,19 @@ int main(int argc, char *argv[]) {
         close(fd);
 		perror("Error on writing N to file");
 		exit(EXIT_FAILURE);
-	}
+	} else {printf("wrote %d to file\n", N);}
 	
 	if (write(fd, "0", 4) != 4) {
         close(fd);
 		perror("Error on writing M to file");
 		exit(EXIT_FAILURE);
-	}
+	} else {printf("wrote 0 to file\n");}
 	
 	if (write(fd, &D_up, 4) != 4) {
         close(fd);
 		perror("Error on writing D to file");
 		exit(EXIT_FAILURE);
-	}
+	} else {printf("wrote %d to file\n", D_up);}
 	
 	struct graph* my_graph = Graph(fd);
 	
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
 	
 	int u,v;
 	while(fscanf(fe, "%d %d", &u, &v)==2){
-		
+		printf("Adding edge %d %d in e2g\n", u, v);
 		add_edge(my_graph, u, v);
 		
 	}

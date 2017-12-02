@@ -164,7 +164,7 @@ void print_graph(struct graph* g){
 	}
 
 }
-/*
+
 int main(int argc, char* argv[]){
 
 	//Expects a name of an file
@@ -201,5 +201,5 @@ int main(int argc, char* argv[]){
 	close_graph(G);
 	close(fd);
 
-	exit(EXIT_SUCCESS);	
-}*/
+	exit(EXIT_SUCCESS);
+}	
