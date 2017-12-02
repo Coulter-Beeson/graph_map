@@ -164,7 +164,7 @@ void print_graph(struct graph* g){
 	}
 
 }
-/*
+
 int main(int argc, char* argv[]){
 
 	//Expects a name of an file
@@ -174,7 +174,7 @@ int main(int argc, char* argv[]){
 	}
 
 	int fd;
-	fd = open(argv[1], O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+	fd = open(argv[1], O_RDWR, (mode_t)0600);
 
 	if (fd == -1){
 		perror("error on opening file");
@@ -202,4 +202,4 @@ int main(int argc, char* argv[]){
 	close(fd);
 
 	exit(EXIT_SUCCESS);	
-}*/
+}

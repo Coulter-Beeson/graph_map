@@ -102,12 +102,12 @@ int main(int argc, char *argv[]) {
 	printf("The length of the file is %d, requiring %d pages\n", length, num_tpages);
 
 	//Needs to have something written so add an empty string
-	/*
+	
 	if (write(fd, "", 1) == -1){
 		close(fd);
 		perror("Error on writing last byte of file");
 		exit(EXIT_FAILURE);
-	}*/
+	}
  
 	//Open the map
 	map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -138,6 +138,8 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	} else {printf("wrote %d to file\n", D_up);}
 	
+	//TODO print the whole file here and look at it?
+
 	struct graph* my_graph = Graph(fd);
 	
 	FILE *fe;
