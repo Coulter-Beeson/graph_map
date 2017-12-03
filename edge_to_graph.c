@@ -128,19 +128,19 @@ int main(int argc, char *argv[]) {
         	close(fd);
 		perror("Error on writing N to file");
 		exit(EXIT_FAILURE);
-	} else {printf("wrote %d to file\n", N);}
+	} //else {printf("wrote %d to file\n", N);}
 	
 	if (fprintf(fp,"%c",(char)0) < 0 ) {
         	close(fd);
 		perror("Error on writing M to file");
 		exit(EXIT_FAILURE);
-	} else {printf("wrote 0 to file\n");}
+	} //else {printf("wrote 0 to file\n");}
 	
 	if ( fprintf(fp,"%c",(char)D_up) < 0 ) {
         	close(fd);
 		perror("Error on writing D to file");
 		exit(EXIT_FAILURE);
-	} else {printf("wrote %d to file\n", D_up);}
+	} //else {printf("wrote %d to file\n", D_up);}
 	
 	//TODO print the whole file here and look at it?
 
