@@ -39,35 +39,37 @@ void queue_print_element(const struct vertex* );
  
 int main(int argc, char* argv[])
 {
-	if(argc != 2){
-		perror("takes a file pointer to a graph");
+	if(argc != 3){
+		perror("takes a file pointer and initial node to traverse graph from as args");
 		exit(EXIT_FAILURE);
 	}
 
 	int fd;
-	fd = open(argv[1], O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+	fd = open(argv[1], O_RDWR , (mode_t)0600);
 
 	if (fd == -1){
 		perror("error on opening file");
 		exit(EXIT_FAILURE);
-	}
+	} 
 
 	//create test graph
 	struct graph* G = Graph(fd);	 //actually get graph object
     struct queue* q = queue_new();
 	
-	int curr_node= 0; //TODO take it as I/P from cmd line
+	int curr_node= atoi(argv[2]); //TODO take it as I/P from cmd line
+	printf("traversing from node %d \n", curr_node);
 	//TODO: check if node is valid node..ie  it actually exists
 	queue_add_element(q, curr_node);//add node to q. 
 	int i, degree;
 	int count = 0; //for testing, to see how manny nodes were visited
 	bool visited[N]= {false};
-  
+	printf("BEGIN TRAVERSAL : \n");
 	   //get first element of queue. get its neighbors n add to queue if not already visited. add that node to visited
 	   while(q->head != NULL)
 	   {
 			curr_node  = q->head->num;
-			if(!visited[curr_node]){
+			if(!visited[curr_node-1]){
+				queue_print_element(q->head);
 				int* nbrs = get_nbrs(G, curr_node);
 				if(nbrs != NULL){
 					degree = get_deg(G, curr_node);
@@ -78,12 +80,12 @@ int main(int argc, char* argv[])
 						//TODO: watch out for array index out of bound
 					}
 				}
-				visited[curr_node]=true;
+				visited[curr_node-1]=true;
 				count++;
 			}
 			queue_remove_element(q); //removes the head
 	   }
-	
+	printf("---- END TRAVERSAL ---- \n");
 	printf("Total nodes visited = %d\n", count);
 	//queue_print(visited);
  	queue_free(q);   // always remember to free() the malloc()ed memory 
@@ -212,7 +214,7 @@ void queue_print_element(const struct vertex* p )
 {
   if( p ) 
     {
-      printf("Num = %d\n", p->num);
+      printf("%d\n", p->num);
     }
   else
     {
