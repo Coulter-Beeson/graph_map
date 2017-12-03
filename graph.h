@@ -26,6 +26,6 @@ void print_edge_list(struct graph* g, int u);
 void print_node(struct graph* g, int u);
 void print_graph(struct graph* g);
 void close_graph(struct graph* g);
-void swap_edges(struct graph* g, int u, int v);
+void swap_nodes(struct graph* g, int u, int v);
 
 #endif // GRAPH_H_

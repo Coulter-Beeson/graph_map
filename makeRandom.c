@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
 	for(i=0;i< N;i=i+1)
 	{
 		v= rand() % N;
-		swap_edges(g, i, v);
+		swap_nodes(g, i, v);
 	}
 	return 0;
 }
