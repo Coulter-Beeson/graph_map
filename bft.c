@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#define N 4039 //num of nodes
+
 struct vertex{
 	int num;
 	struct vertex* next;
@@ -32,7 +34,7 @@ struct queue* queue_new(void);
 struct queue* queue_free( struct queue* );
 void queue_print( const struct queue* );
 void queue_print_element(const struct vertex* );
-bool node_visited(struct queue*, const int);
+
 
  
 int main(int argc, char* argv[])
@@ -53,18 +55,19 @@ int main(int argc, char* argv[])
 	//create test graph
 	struct graph* G = Graph(fd);	 //actually get graph object
     struct queue* q = queue_new();
-	struct queue* visited= queue_new();
+	
 	int curr_node= 0; //TODO take it as I/P from cmd line
 	//TODO: check if node is valid node..ie  it actually exists
 	queue_add_element(q, curr_node);//add node to q. 
 	int i, degree;
-	
+	int count = 0; //for testing, to see how manny nodes were visited
+	bool visited[N]= {false};
   
 	   //get first element of queue. get its neighbors n add to queue if not already visited. add that node to visited
 	   while(q->head != NULL)
 	   {
 			curr_node  = q->head->num;
-			if(!node_visited(visited, curr_node)){
+			if(!visited[curr_node]){
 				int* nbrs = get_nbrs(G, curr_node);
 				if(nbrs != NULL){
 					degree = get_deg(G, curr_node);
@@ -75,36 +78,18 @@ int main(int argc, char* argv[])
 						//TODO: watch out for array index out of bound
 					}
 				}
-				queue_add_element(visited, curr_node);
+				visited[curr_node]=true;
+				count++;
 			}
 			queue_remove_element(q); //removes the head
 	   }
 	
-		
+	printf("Total nodes visited = %d\n", count);
 	//queue_print(visited);
  	queue_free(q);   // always remember to free() the malloc()ed memory 
-	queue_free(visited); 
 	free(q);        //free() if list is kept separate from free()ing the structure, I think its a good design 
-	free(visited);
 	q = NULL;      // after free() always set that pointer to NULL, prevents dangling pointer
-	visited = NULL;
 	return 0;
-}
- 
-bool node_visited(struct queue* list, const int val)
-{
-	if(list!= NULL)
-	{
-		struct vertex* v= list->head;
-		do{
-			if( v->num == val)
-				return true;
-			v = v->next;
-		}
-		while(v != NULL);
-	}
-	return false;
-	
 }
 
 bool queue_add_element(struct queue* s, const int i)
