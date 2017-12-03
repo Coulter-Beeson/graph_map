@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 struct vertex{
 	int num;
@@ -30,7 +32,7 @@ struct queue* queue_new(void);
 struct queue* queue_free( struct queue* );
 void queue_print( const struct queue* );
 void queue_print_element(const struct vertex* );
-bool node_visted(struct queue*, const int);
+bool node_visited(struct queue*, const int);
 
  
 int main(int argc, char* argv[])
@@ -55,20 +57,21 @@ int main(int argc, char* argv[])
 	int curr_node= 0; //TODO take it as I/P from cmd line
 	//TODO: check if node is valid node..ie  it actually exists
 	queue_add_element(q, curr_node);//add node to q. 
-	
+	int i, degree;
 	
   
 	   //get first element of queue. get its neighbors n add to queue if not already visited. add that node to visited
-	   while(q->head != null)
+	   while(q->head != NULL)
 	   {
 			curr_node  = q->head->num;
-			if(!node_visited(curr_node)){
+			if(!node_visited(visited, curr_node)){
 				int* nbrs = get_nbrs(G, curr_node);
 				if(nbrs != NULL){
-					int degree = get_deg(G, curr_node)
-					for(int i=0;i< degree;i=i+1)
+					degree = get_deg(G, curr_node);
+					
+					for(i=0;i< degree;i=i+1)
 					{
-						queue_add_element(q, nbrs[i])
+						queue_add_element(q, nbrs[i]);
 						//TODO: watch out for array index out of bound
 					}
 				}
@@ -79,16 +82,16 @@ int main(int argc, char* argv[])
 	
 		
 	//queue_print(visited);
- 	queue_free(q);   /* always remember to free() the malloc()ed memory */
+ 	queue_free(q);   // always remember to free() the malloc()ed memory 
 	queue_free(visited); 
-	free(q);        /* free() if list is kept separate from free()ing the structure, I think its a good design */
-	free(visited)
-	q = NULL;      /* after free() always set that pointer to NULL, prevents dangling pointer */
-	visited = NULL
+	free(q);        //free() if list is kept separate from free()ing the structure, I think its a good design 
+	free(visited);
+	q = NULL;      // after free() always set that pointer to NULL, prevents dangling pointer
+	visited = NULL;
 	return 0;
 }
  
-bool node_visted(struct queue* list, const int val)
+bool node_visited(struct queue* list, const int val)
 {
 	if(list!= NULL)
 	{
@@ -179,11 +182,11 @@ bool queue_remove_element( struct queue* s )
 }
 
 /* -------small helper fucntions ---------- */
-struct queue* queue_free( struct my_list* s )
+struct queue* queue_free( struct queue* s )
 {
-  while( s->head )
+  while( s->head != NULL)
     {
-      list_remove_element(s);
+      queue_remove_element(s);
     }
  
   return s;
@@ -208,7 +211,7 @@ void queue_print( const struct queue* ps )
 {
   struct vertex* p = NULL;
  
-  if( ps )
+  if( ps !=NULL )
     {
       for( p = ps->head; p; p = p->next )
     {
