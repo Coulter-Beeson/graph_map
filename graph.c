@@ -187,6 +187,10 @@ void print_graph(struct graph* g){
 	}
 
 }
+
+void swap_edges(struct graph* g, int u, int v){
+	//TODO --meg
+}
 /*
 int main(int argc, char* argv[]){
 
