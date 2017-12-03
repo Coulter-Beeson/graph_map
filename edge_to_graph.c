@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 	//TODO Replaced this to get the page size
 	long PAGE_SIZE = sysconf(_SC_PAGESIZE);
 
-	int header_size = 20 + 8*N; //N, M, D(3) burn (2) [o,d]*N in 
+	int header_size = 12 + 8*N; //N, M, D(3) [o,d]*N in 
 	printf("The header is (%d x 2 + 5) X 4 = %d bytes\n", N, header_size);
 	printf("The pages are %d bytes\n", PAGE_SIZE);
 	
@@ -166,7 +166,8 @@ int main(int argc, char *argv[]) {
 		perror("error on opening file");
 		return(-1);
 	}
-
+	
+	//initialize nodes with offset and degree 0
 	for(int i=0; i<my_graph->N ;i++){
 		my_graph->g[3+2*i]=i;
 		my_graph->g[3+2*i+1]=0;

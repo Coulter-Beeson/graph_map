@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <math.h>
 #include "graph.h"
 
 
@@ -53,7 +54,8 @@ struct graph* Graph(int fd){
 	
 	printf("page size is : %d now calculate offset\n",page_size);
 	//The off set from which the adjacency lists start
-	g->off = ((4*(3+2*g->N)/page_size)+1)*page_size;
+	g->off = ceil((4*(3+2*g->N)/(double)page_size))*page_size;
+	printf("The offset is: %d\n", g->off);
 
 	printf("returning graph\n");
 	return g;
@@ -94,19 +96,18 @@ bool get_edge(struct graph* g, int u, int v){
 
 //INcreases the edge count in both the object and the file
 void inc_edge_count(struct graph* g, int u, int v){
-	//printf("in inc_edge_count\n");
+
 	g->M++;
-	//printf("m inced\n");
+
 	g->g[1]++;
-	//printf("finished incrementing edge count\n");
 }
 
 //Returns an adjacency list for the given node u
 int* get_nbrs(struct graph* g, int u){
-	//printf("in get_nbrs\n");
+
 	int o = get_off(g,u);
-	//printf("out of get_off\n");
-	return &g->g[ g->off + g->D*o ];
+
+	return &g[ g->off + g->D*o ];
 }
 
 //Adds the edge u,v to g
