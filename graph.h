@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 struct graph{
-	char* g; //The underlying mmap'd file
+	unsigned int* g; //The underlying mmap'd file
 	int N; // The number of nodes
 	int M; // The number of edges
 	int D; // Upper bound on maximum degree
@@ -20,7 +20,6 @@ int get_off(struct graph* g, int u);
 int get_deg(struct graph* g, int u);
 void inc_deg(struct graph* g, int u);
 void inc_edge_count(struct graph* g, int u, int v);
-
 
 void print_edge_list(struct graph* g, int u);
 void print_node(struct graph* g, int u);
