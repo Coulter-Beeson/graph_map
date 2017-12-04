@@ -33,7 +33,7 @@ struct graph* Graph(int fd){
 	}
 
 	printf("mapping file\n");
-	unsigned long* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	unsigned int* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(map == MAP_FAILED){
 		close(fd);
