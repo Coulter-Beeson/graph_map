@@ -22,7 +22,7 @@ struct graph* Graph(int fd){
 	fstat(fd, &st);
 
 	//TODO add error checking to see if the file is an existing
-	int length = st.st_size;
+	unsigned long length = st.st_size;
 
 	printf("the length of the file is %d \n",length);
 	//Open the map
@@ -33,7 +33,7 @@ struct graph* Graph(int fd){
 	}
 
 	printf("mapping file\n");
-	unsigned int* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	unsigned long* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(map == MAP_FAILED){
 		close(fd);
@@ -52,11 +52,11 @@ struct graph* Graph(int fd){
 	
 	printf("N = %d M = %d D = %d\n", g->N, g->M, g->D);
 
-	long page_size = sysconf(_SC_PAGESIZE);
+	unsigned long page_size = sysconf(_SC_PAGESIZE);
 	
 	printf("page size is : %d now calculate offset\n",page_size);
 	//The off set from which the adjacency lists start
-	g->off = ceil((sizeof(unsigned int)*(3+2*g->N)/(double)page_size))*page_size;
+	g->off = ceil((sizeof(unsigned long)*(3+2*g->N)/(double)page_size))*page_size;
 	printf("The offset is: %d\n", g->off);
 
 	printf("returning graph\n");
@@ -67,7 +67,7 @@ struct graph* Graph(int fd){
 //This is required otherwise you're file will not be correct!
 void close_graph(struct graph* g){
 	printf("Closing graph\n");
-	int length = g->off + g->N*g->D;
+	unsigned long length = g->off + g->N*g->D;
 
 	if (msync(g->g, length, MS_SYNC) == -1){
 		perror("couldn't sync to disk");
@@ -81,13 +81,13 @@ void close_graph(struct graph* g){
 	printf("Graph closed.\n");
 }
 
-bool get_edge(struct graph* g, int u, int v){
-	int d = get_deg(g,u);
-	int o = get_off(g,u);
+bool get_edge(struct graph* g, unsigned long u, unsigned long v){
+	unsigned long d = get_deg(g,u);
+	unsigned long o = get_off(g,u);
 
-	unsigned int* edges = get_nbrs(g,u);
+	unsigned long* edges = get_nbrs(g,u);
 	
-	for(int i=0; i<d; i++){
+	for(unsigned long i=0; i<d; i++){
 		if(edges[i] == v){
 			return true;
 		}
@@ -97,7 +97,7 @@ bool get_edge(struct graph* g, int u, int v){
 }
 
 //INcreases the edge count in both the object and the file
-void inc_edge_count(struct graph* g, int u, int v){
+void inc_edge_count(struct graph* g, unsigned long u, unsigned long v){
 
 	g->M++;
 
@@ -105,21 +105,21 @@ void inc_edge_count(struct graph* g, int u, int v){
 }
 
 //Returns an adjacency list for the given node u
-unsigned int* get_nbrs(struct graph* g, int u){
+unsigned long* get_nbrs(struct graph* g, unsigned long u){
 
-	unsigned int o = get_off(g,u);
+	unsigned long o = get_off(g,u);
 
-	return &g[ g->off + g->D*o ];
+	return &g->g[ g->off + g->D*o ];
 }
 
 //Adds the edge u,v to g
-void add_edge(struct graph* g, int u, int v){
+void add_edge(struct graph* g, unsigned long u, unsigned long v){
 	//printf("Adding edge %d %d in add_edge\n", u,v);
 	//This makes it safe, but slow
 	//if(get_edge(g,u,v)) return;
 
-	unsigned int* edges_u = get_nbrs(g,u);
-	unsigned int* edges_v = get_nbrs(g,v);
+	unsigned long* edges_u = get_nbrs(g,u);
+	unsigned long* edges_v = get_nbrs(g,v);
 
 	edges_u[get_deg(g,u)] = v;
 	edges_v[get_deg(g,v)] = u;
@@ -131,33 +131,33 @@ void add_edge(struct graph* g, int u, int v){
 
 }
 
-int get_off(struct graph* g, int u){
+unsigned long get_off(struct graph* g, unsigned long u){
 	//printf("offset is being calculated\n");
 	return g->g[3 + 2*(u-1)];
 }
 
-int get_deg(struct graph* g, int u){
+unsigned long get_deg(struct graph* g, unsigned long u){
 	//printf("in get_deg\n");
 	return g->g[3 + 2*(u-1)+1];
 }
 
-void inc_deg(struct graph* g, int u){
+void inc_deg(struct graph* g, unsigned long u){
 	g->g[3 + 2*(u-1)+1] += 1;
 }
 
 //prints a single node's offset and degree
-void print_node(struct graph* g, int u){
+void print_node(struct graph* g, unsigned long u){
 	printf("(%d,%d)",get_off(g,u),get_deg(g,u));
 }
 
 //prints a nodes adjacency list
-void print_edge_list(struct graph* g, int u){
-	int d = get_deg(g,u);
-	int* el = get_nbrs(g,u);
+void print_edge_list(struct graph* g, unsigned long u){
+	unsigned long d = get_deg(g,u);
+	unsigned long* el = get_nbrs(g,u);
 
 	printf("%d: [", u);
 
-	for(int i=0; i<g->D; i++){
+	for(unsigned long i=0; i<g->D; i++){
 		
 		if(el[i] == 0){
 			printf(" ");
@@ -177,7 +177,7 @@ void print_graph(struct graph* g){
 	printf("N:%d,M:%d,D:%d\n",g->N,g->M,g->D);
 
 	//printf("printing nodes\n");
-	for(unsigned int i=1; i<=g->N; i++){
+	for(unsigned long i=1; i<=g->N; i++){
 		printf("%d",i);
 		print_node(g,i);
 	}
@@ -191,7 +191,7 @@ void print_graph(struct graph* g){
 
 }
 
-void swap_nodes(struct graph* g, int u, int v){
+void swap_nodes(struct graph* g, unsigned long u, unsigned long v){
 	//TODO --meg
 }
 /*
