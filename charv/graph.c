@@ -32,8 +32,8 @@ struct graph* Graph(int fd){
 		exit(EXIT_FAILURE);
 	}
 
-	printf("mapping file\n");
-	unsigned long* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	printf("mapping file");
+	char* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(map == MAP_FAILED){
 		close(fd);
@@ -49,14 +49,12 @@ struct graph* Graph(int fd){
 	g->N = map[0];	//Number of nodes
 	g->M = map[1];	//Number of edges
 	g->D = map[2];	//Upper bound on max degree
-	
-	printf("N = %d M = %d D = %d\n", g->N, g->M, g->D);
 
 	long page_size = sysconf(_SC_PAGESIZE);
 	
 	printf("page size is : %d now calculate offset\n",page_size);
 	//The off set from which the adjacency lists start
-	g->off = ceil((sizeof(unsigned int)*(3+2*g->N)/(double)page_size))*page_size;
+	g->off = ceil((4*(3+2*g->N)/(double)page_size))*page_size;
 	printf("The offset is: %d\n", g->off);
 
 	printf("returning graph\n");
@@ -85,7 +83,7 @@ bool get_edge(struct graph* g, int u, int v){
 	int d = get_deg(g,u);
 	int o = get_off(g,u);
 
-	unsigned int* edges = get_nbrs(g,u);
+	int* edges = get_nbrs(g,u);
 	
 	for(int i=0; i<d; i++){
 		if(edges[i] == v){
@@ -105,9 +103,9 @@ void inc_edge_count(struct graph* g, int u, int v){
 }
 
 //Returns an adjacency list for the given node u
-unsigned int* get_nbrs(struct graph* g, int u){
+int* get_nbrs(struct graph* g, int u){
 
-	unsigned int o = get_off(g,u);
+	int o = get_off(g,u);
 
 	return &g[ g->off + g->D*o ];
 }
@@ -118,8 +116,8 @@ void add_edge(struct graph* g, int u, int v){
 	//This makes it safe, but slow
 	//if(get_edge(g,u,v)) return;
 
-	unsigned int* edges_u = get_nbrs(g,u);
-	unsigned int* edges_v = get_nbrs(g,v);
+	int* edges_u = get_nbrs(g,u);
+	int* edges_v = get_nbrs(g,v);
 
 	edges_u[get_deg(g,u)] = v;
 	edges_v[get_deg(g,v)] = u;
@@ -177,17 +175,17 @@ void print_graph(struct graph* g){
 	printf("N:%d,M:%d,D:%d\n",g->N,g->M,g->D);
 
 	//printf("printing nodes\n");
-	for(unsigned int i=1; i<=g->N; i++){
+	for(int i=1; i<=g->N; i++){
 		printf("%d",i);
 		print_node(g,i);
 	}
 	printf("\n");
-	/*
+
 	//printf("print edge lists\n");
-	for(unsigned int i=1; i<=g->N; i++){
+	for(int i=1; i<=g->N; i++){
 		print_edge_list(g,i);
 		printf("\n");
-	}*/
+	}
 
 }
 
