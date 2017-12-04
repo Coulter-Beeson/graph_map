@@ -45,7 +45,7 @@ struct graph* Graph(int fd){
 	struct graph *g = malloc(sizeof(struct graph));
 
 	printf("assigning member variables\n");
-	g->g = map;
+	g->map = map;
 	g->N = map[0];	//Number of nodes
 	g->M = map[1];	//Number of edges
 	g->D = map[2];	//Upper bound on max degree
@@ -69,11 +69,11 @@ void close_graph(struct graph* g){
 	printf("Closing graph\n");
 	unsigned long length = g->off + g->N*g->D;
 
-	if (msync(g->g, length, MS_SYNC) == -1){
+	if (msync(g->map, length, MS_SYNC) == -1){
 		perror("couldn't sync to disk");
 	}
 
-	if (munmap(g->g, length) == -1){
+	if (munmap(g->map, length) == -1){
 		perror("Error unmappin");
 		exit(EXIT_FAILURE);
 	}
@@ -101,7 +101,7 @@ void inc_edge_count(struct graph* g, unsigned long u, unsigned long v){
 
 	g->M++;
 
-	g->g[1]++;
+	g->map[1]++;
 }
 
 //Returns an adjacency list for the given node u
@@ -109,7 +109,7 @@ unsigned long* get_nbrs(struct graph* g, unsigned long u){
 
 	unsigned long o = get_off(g,u);
 
-	return &g->g[ g->off + g->D*o ];
+	return &g->map[ g->off + g->D*o ];
 }
 
 //Adds the edge u,v to g
@@ -133,16 +133,16 @@ void add_edge(struct graph* g, unsigned long u, unsigned long v){
 
 unsigned long get_off(struct graph* g, unsigned long u){
 	//printf("offset is being calculated\n");
-	return g->g[3 + 2*(u-1)];
+	return g->map[3 + 2*(u-1)];
 }
 
 unsigned long get_deg(struct graph* g, unsigned long u){
 	//printf("in get_deg\n");
-	return g->g[3 + 2*(u-1)+1];
+	return g->map[3 + 2*(u-1)+1];
 }
 
 void inc_deg(struct graph* g, unsigned long u){
-	g->g[3 + 2*(u-1)+1] += 1;
+	g->map[3 + 2*(u-1)+1] += 1;
 }
 
 //prints a single node's offset and degree

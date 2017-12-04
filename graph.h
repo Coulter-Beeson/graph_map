@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 struct graph{
-	unsigned long* g; //The underlying mmap'd file
+	unsigned long* map; //The underlying mmap'd file
 	unsigned long N; // The number of nodes
 	unsigned long M; // The number of edges
 	unsigned long D; // Upper bound on maximum degree
