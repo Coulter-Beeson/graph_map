@@ -148,16 +148,16 @@ int main(int argc, char *argv[]) {
 	rewind(fp);
 	
 	
-	/*
-	int c;
-	c=fread(buf, sizeof(int), 1, fp);
+	
+	unsigned long c;
+	c=fread(buf, sizeof(unsigned long), 1, fp);
 	printf("N:%d\n",c);
 
-	c=fread(buf, sizeof(int), 1, fp);
+	c=fread(buf, sizeof(unsigned long), 1, fp);
 	printf("M:%d\n",c);
 	
-	c=fread(buf, sizeof(int), 1, fp);
-	printf("D:%d\n",c);*/
+	c=fread(buf, sizeof(unsigned long), 1, fp);
+	printf("D:%d\n",c);
 
 	struct graph* my_graph = Graph(fd);
 	
@@ -180,7 +180,7 @@ int main(int argc, char *argv[]) {
 	while(fscanf(fe, "%d %d", &u, &v)==2){
 		printf("Adding edge %d %d in e2g\n", u, v);
 		add_edge(my_graph, u, v);
-		print_graph(my_graph);	
+		//print_graph(my_graph);	
 	}
 
 	

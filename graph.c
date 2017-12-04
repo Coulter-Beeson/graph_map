@@ -175,19 +175,19 @@ void print_graph(struct graph* g){
 	printf("printing graph \n");
 
 	printf("N:%d,M:%d,D:%d\n",g->N,g->M,g->D);
-
+	
 	//printf("printing nodes\n");
 	for(unsigned long i=1; i<=g->N; i++){
 		printf("%d",i);
 		print_node(g,i);
 	}
 	printf("\n");
-	/*
+	
 	//printf("print edge lists\n");
 	for(unsigned int i=1; i<=g->N; i++){
 		print_edge_list(g,i);
 		printf("\n");
-	}*/
+	}
 
 }
 
