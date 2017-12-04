@@ -128,37 +128,17 @@ int main(int argc, char *argv[]) {
 	
 	fwrite(buf, sizeof(unsigned long), 3, fp);
 	
-	/*
-	if (fprintf(fp,"%d",(int)0) < 0 ) {
-        	close(fd);
-		perror("Error on writing M to file");
-		exit(EXIT_FAILURE);
-	} //else {printf("wrote 0 to file\n");}
 	
-	if ( fprintf(fp,"%d",(int)D_up) < 0 ) {
-        	close(fd);
-		perror("Error on writing D to file");
-		exit(EXIT_FAILURE);
-	} //else {printf("wrote %d to file\n", D_up);}
-	*/
-	//TODO print the whole file here and look at it?
-
-	//printf("printing back the file should have NMD\n");
-
 	rewind(fp);
-	
 	
 	
 	unsigned long c;
 	c=fread(buf, sizeof(unsigned long), 1, fp);
-	printf("N:%d\n",c);
-
-	c=fread(buf, sizeof(unsigned long), 1, fp);
-	printf("M:%d\n",c);
 	
 	c=fread(buf, sizeof(unsigned long), 1, fp);
-	printf("D:%d\n",c);
-
+		
+	c=fread(buf, sizeof(unsigned long), 1, fp);
+	
 	struct graph* my_graph = Graph(fd);
 	
 	FILE *fe;
