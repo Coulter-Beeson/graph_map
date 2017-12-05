@@ -56,17 +56,25 @@ int main(int argc, char* argv[])
 
 	//create test graph
 	struct graph* G = Graph(fd);	 //actually get graph object
+<<<<<<< HEAD
 	struct queue* q = queue_new();
+=======
+	printf("bft:: Print graph \n");
+	print_graph(G);
+	
+    struct queue* q = queue_new();
+>>>>>>> cdd48142b1738c67a06645c574f01366f6678f44
 	
 	printf("madde graph now printing\n");
 
 	//print_graph(G);
 
 	unsigned long curr_node= strtoul(argv[2],NULL,10); 
-	printf("traversing from node %lu \n", curr_node);
+	printf("Traversing from node %lu \n", curr_node);
 	//TODO: check if node is valid node..ie  it actually exists
 	queue_add_element(q, curr_node);//add node to q. 
-	int i, degree;
+	unsigned long i; 
+	unsigned long degree;
 	unsigned long* nbrs;
 	int count = 0; //for testing, to see how manny nodes were visited
 	bool visited[N]= {false};
@@ -78,19 +86,19 @@ int main(int argc, char* argv[])
 			curr_node  = q->head->num;
 			if(!visited[(int)curr_node-1]){
 				queue_print_element(q->head);
-				nbrs = get_nbrs(G, (unsigned long)curr_node);
+				nbrs = get_nbrs(G,curr_node);
 				printf("here2");
 				if(nbrs != NULL){
-					degree = (int)get_deg(G, curr_node);
-					printf("The neighbors of %d are ", curr_node);
+					degree = get_deg(G, curr_node);
+					printf("The neighbors of %lu are ", curr_node);
 					for(i=0;i< degree;i=i+1)
 					{
-						queue_add_element(q, (int)nbrs[i]);
-						printf(" %d",(int)nbrs[i]);
+						queue_add_element(q, nbrs[i]);
+						printf(" %lu",nbrs[i]);
 						//TODO: watch out for array index out of bound
 					}
 				}
-				visited[curr_node-1]=true;
+				visited[(int)curr_node-1]=true;
 				count++;
 				printf("\n");
 			}
@@ -98,7 +106,7 @@ int main(int argc, char* argv[])
 	   }
 	printf("---- END TRAVERSAL ---- \n");
 	printf("Total nodes visited = %d\n", count);
-	printf(" Size of int  %d", sizeof(int));
+
 	//queue_print(visited);
  	queue_free(q);   // always remember to free() the malloc()ed memory 
 	free(q);        //free() if list is kept separate from free()ing the structure, I think its a good design 

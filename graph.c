@@ -16,7 +16,7 @@
 //of the correct size`
 struct graph* Graph(int fd){
 
-	printf("creating graph\n");
+	//printf("creating graph\n");
 
 	struct stat st;
 	fstat(fd, &st);
@@ -24,7 +24,7 @@ struct graph* Graph(int fd){
 	//TODO add error checking to see if the file is an existing
 	unsigned long length = st.st_size;
 
-	printf("the length of the file is %d \n",length);
+	//printf("the length of the file is %d \n",length);
 	//Open the map
 
 	if(length == 0){
@@ -32,7 +32,7 @@ struct graph* Graph(int fd){
 		exit(EXIT_FAILURE);
 	}
 
-	printf("mapping file\n");
+	//printf("mapping file\n");
 	unsigned long* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	if(map == MAP_FAILED){
@@ -41,37 +41,37 @@ struct graph* Graph(int fd){
 		exit(EXIT_FAILURE);
 	}
 
-	printf("allocating graph object\n");
+	//printf("allocating graph object\n");
 	struct graph *g = malloc(sizeof(struct graph));
 
-	printf("assigning member variables\n");
+	//printf("assigning member variables\n");
 	g->map = map;
 	g->N = map[0];	//Number of nodes
 	g->M = map[1];	//Number of edges
 	g->D = map[2];	//Upper bound on max degree
 	
-	printf("N = %d M = %d D = %d\n", g->N, g->M, g->D);
+	//printf("N = %d M = %d D = %d\n", g->N, g->M, g->D);
 
 	unsigned long page_size = sysconf(_SC_PAGESIZE);
 	
-	printf("page size is : %d now calculate offset\n",page_size);
+	//printf("page size is : %d now calculate offset\n",page_size);
 
 	int num_pages = ceil((sizeof(unsigned long)*(3+2*g->N)/(double)page_size));
 
-	printf("the number of pages for the header is %d\n",num_pages);
+	//printf("the number of pages for the header is %d\n",num_pages);
 
 	//The off set from which the adjacency lists start
 	g->off = (num_pages*page_size)/sizeof(unsigned long);
-	printf("The offset is: %d\n", g->off);
+	//printf("The offset is: %d\n", g->off);
 
-	printf("returning graph\n");
+	//printf("returning graph\n");
 	return g;
 }
 
 //Closes the graph file and syncs the memory
 //This is required otherwise you're file will not be correct!
 void close_graph(struct graph* g){
-	printf("Closing graph\n");
+	//printf("Closing graph\n");
 	unsigned long length = g->off + g->N*g->D;
 
 	if (msync(g->map, length, MS_SYNC) == -1){
@@ -83,7 +83,7 @@ void close_graph(struct graph* g){
 		exit(EXIT_FAILURE);
 	}
 	
-	printf("Graph closed.\n");
+	//printf("Graph closed.\n");
 }
 
 bool get_edge(struct graph* g, unsigned long u, unsigned long v){
@@ -141,6 +141,10 @@ unsigned long get_off(struct graph* g, unsigned long u){
 	return g->map[3 + 2*(u-1)];
 }
 
+void set_off(struct graph* g, unsigned long u, unsigned long off){
+	g->map[3+2*(u-1)]=off;
+}
+
 unsigned long get_deg(struct graph* g, unsigned long u){
 	//printf("in get_deg\n");
 	return g->map[3 + 2*(u-1)+1];
@@ -156,20 +160,14 @@ void print_node(struct graph* g, unsigned long u){
 }
 
 //prints a nodes adjacency list
-void print_edge_list(struct graph* g, unsigned long u){
+void print_nbrs(struct graph* g, unsigned long u){
 	unsigned long d = get_deg(g,u);
 	unsigned long* el = get_nbrs(g,u);
 
 	printf("%d: [", u);
 
-	for(unsigned long i=0; i<g->D; i++){
-		
-		if(el[i] == 0){
-			printf(" ");
-		}
-		else{
-			printf("%d",el[i]);
-		}
+	for(unsigned long i=0; i<d; i++){
+		printf("%d",el[i]);
 		if(i != d-1) printf(",");
 	}
 	
@@ -177,7 +175,7 @@ void print_edge_list(struct graph* g, unsigned long u){
 }
 
 void print_graph(struct graph* g){
-	printf("printing graph \n");
+	//printf("printing graph \n");
 
 	printf("N:%d,M:%d,D:%d\n",g->N,g->M,g->D);
 	
@@ -190,14 +188,88 @@ void print_graph(struct graph* g){
 	
 	//printf("print edge lists\n");
 	for(unsigned int i=1; i<=g->N; i++){
-		print_edge_list(g,i);
+		print_nbrs(g,i);
 		printf("\n");
 	}
 
 }
 
 void swap_nodes(struct graph* g, unsigned long u, unsigned long v){
-	//TODO --meg
+	
+
+	int d_u = get_deg(g,u);
+	int d_v = get_deg(g,v);
+
+	unsigned long* nbr_u = get_nbrs(g,u);
+	unsigned long* nbr_v = get_nbrs(g,v);
+
+	//write down the shorter of the two
+	
+	if(d_u <= d_v){
+
+		printf("d_u: %d smaller than d_v:%d\n", d_u, d_v);
+		unsigned long tmp[d_u];
+
+		printf("copying from u to temp\n");
+		memcpy(tmp,nbr_u,d_u*sizeof(unsigned long));	
+
+		print_nbrs(g,u);		
+
+
+		printf("copying from v to u\n");
+		memcpy(nbr_u,nbr_v,d_v*sizeof(unsigned long));
+		
+		print_nbrs(g,u);
+		print_nbrs(g,v);
+
+		printf("copying from u to v\n");
+		memcpy(nbr_v,tmp,d_u*sizeof(unsigned long));
+		print_nbrs(g,v);
+
+
+		unsigned long tmp_o = get_off(g,u);
+
+		set_off(g,u,get_off(g,v));
+		set_off(g,v,tmp_o);
+	}
+	else{
+	
+		printf("d_v: %d smaller than d_u:%d\n", d_v, d_u);
+		unsigned long tmp[d_v];
+		
+		printf("copying from v to temp\n");
+		memcpy(tmp,nbr_v,d_v*sizeof(unsigned long));	
+		print_nbrs(g,v);		
+		printf("\n");
+
+		for(int i=0; i<d_v ;i++){
+			printf("%d,",tmp[i]);
+		}
+		printf("\n");
+
+		printf("printing neighbours of %d",u);
+		print_nbrs(g,u);
+		printf("\n");
+
+		printf("copying from u to v\n");
+		memcpy(nbr_v,nbr_u,d_u*sizeof(unsigned long));
+	
+		print_nbrs(g,v);
+		printf("\n");
+		print_nbrs(g,u);
+		printf("\n");
+
+		printf("copying from v to u\n");
+		memcpy(nbr_u,tmp,d_v*sizeof(unsigned long));
+		print_nbrs(g,u);	
+		printf("\n");
+
+		unsigned long tmp_o = get_off(g,v);
+
+		set_off(g,v,get_off(g,u));
+		set_off(g,u,tmp_o);
+	}
+
 }
 /*
 int main(int argc, char* argv[]){
