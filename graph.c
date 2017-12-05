@@ -55,8 +55,13 @@ struct graph* Graph(int fd){
 	unsigned long page_size = sysconf(_SC_PAGESIZE);
 	
 	printf("page size is : %d now calculate offset\n",page_size);
+
+	int num_pages = ceil((sizeof(unsigned long)*(3+2*g->N)/(double)page_size));
+
+	printf("the number of pages for the header is %d\n",num_pages);
+
 	//The off set from which the adjacency lists start
-	g->off = ceil((sizeof(unsigned long)*(3+2*g->N)/(double)page_size))*page_size;
+	g->off = (num_pages*page_size)/sizeof(unsigned long);
 	printf("The offset is: %d\n", g->off);
 
 	printf("returning graph\n");

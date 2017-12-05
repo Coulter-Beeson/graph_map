@@ -39,6 +39,8 @@ void queue_print_element(const struct vertex* );
  
 int main(int argc, char* argv[])
 {
+	printf("starting BFS");
+
 	if(argc != 3){
 		perror("takes a file pointer and initial node to traverse graph from as args");
 		exit(EXIT_FAILURE);
@@ -54,8 +56,12 @@ int main(int argc, char* argv[])
 
 	//create test graph
 	struct graph* G = Graph(fd);	 //actually get graph object
-    struct queue* q = queue_new();
+	struct queue* q = queue_new();
 	
+	printf("madde graph now printing\n");
+
+	//print_graph(G);
+
 	unsigned long curr_node= strtoul(argv[2],NULL,10); 
 	printf("traversing from node %lu \n", curr_node);
 	//TODO: check if node is valid node..ie  it actually exists

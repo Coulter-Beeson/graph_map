@@ -72,12 +72,12 @@ int main(int argc, char *argv[]) {
 	int a, b;
 	//increases degree value per node
 	while(fscanf(fd, "%d %d", &a, &b)==2) {
-		printf("Before ++ Node %d has degree %d\n", a, nodeArray[a]);
-		printf("Before ++ Node %d has degree %d\n", b, nodeArray[b]);
+		//printf("Before ++ Node %d has degree %d\n", a, nodeArray[a]);
+		//printf("Before ++ Node %d has degree %d\n", b, nodeArray[b]);
 		nodeArray[a]++;
 		nodeArray[b]++;
-		printf("After ++ Node %d has degree %d\n", a, nodeArray[a]);
-		printf("After ++ Node %d has degree %d\n", b, nodeArray[b]);
+		//printf("After ++ Node %d has degree %d\n", a, nodeArray[a]);
+		//printf("After ++ Node %d has degree %d\n", b, nodeArray[b]);
 	
 	}
 	

@@ -154,20 +154,27 @@ int main(int argc, char *argv[]) {
 		my_graph->map[3+2*i+1]=0;
 	}
 
-	print_graph(my_graph);
+	//print_graph(my_graph);
 	
 	unsigned long u,v;
 	while(fscanf(fe, "%d %d", &u, &v)==2){
-		printf("Adding edge %d %d in e2g\n", u, v);
+		//printf("Adding edge %d %d in e2g\n", u, v);
 		add_edge(my_graph, u, v);
 		//print_graph(my_graph);	
 	}
 
 	
-	print_graph(my_graph);
+	//print_graph(my_graph);
+
+	close_graph(my_graph);
+
+	struct graph* g2 = Graph(fd);
+
+	//print_graph(g2);
+	//close_graph(g2);	
+
 
 	fclose(fe);
-	close_graph(my_graph);
 	close(fd);
 	fclose(fp);
 
