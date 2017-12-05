@@ -206,66 +206,22 @@ void swap_nodes(struct graph* g, unsigned long u, unsigned long v){
 	//write down the shorter of the two
 	
 	if(d_u <= d_v){
-
-		printf("d_u: %d smaller than d_v:%d\n", d_u, d_v);
 		unsigned long tmp[d_u];
-
-		printf("copying from u to temp\n");
 		memcpy(tmp,nbr_u,d_u*sizeof(unsigned long));	
-
-		print_nbrs(g,u);		
-
-
-		printf("copying from v to u\n");
 		memcpy(nbr_u,nbr_v,d_v*sizeof(unsigned long));
-		
-		print_nbrs(g,u);
-		print_nbrs(g,v);
-
-		printf("copying from u to v\n");
 		memcpy(nbr_v,tmp,d_u*sizeof(unsigned long));
-		print_nbrs(g,v);
-
 
 		unsigned long tmp_o = get_off(g,u);
-
 		set_off(g,u,get_off(g,v));
 		set_off(g,v,tmp_o);
 	}
 	else{
-	
-		printf("d_v: %d smaller than d_u:%d\n", d_v, d_u);
-		unsigned long tmp[d_v];
-		
-		printf("copying from v to temp\n");
+		unsigned long tmp[d_v];		
 		memcpy(tmp,nbr_v,d_v*sizeof(unsigned long));	
-		print_nbrs(g,v);		
-		printf("\n");
-
-		for(int i=0; i<d_v ;i++){
-			printf("%d,",tmp[i]);
-		}
-		printf("\n");
-
-		printf("printing neighbours of %d",u);
-		print_nbrs(g,u);
-		printf("\n");
-
-		printf("copying from u to v\n");
 		memcpy(nbr_v,nbr_u,d_u*sizeof(unsigned long));
-	
-		print_nbrs(g,v);
-		printf("\n");
-		print_nbrs(g,u);
-		printf("\n");
-
-		printf("copying from v to u\n");
 		memcpy(nbr_u,tmp,d_v*sizeof(unsigned long));
-		print_nbrs(g,u);	
-		printf("\n");
 
 		unsigned long tmp_o = get_off(g,v);
-
 		set_off(g,v,get_off(g,u));
 		set_off(g,u,tmp_o);
 	}

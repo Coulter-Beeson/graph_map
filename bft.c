@@ -56,17 +56,9 @@ int main(int argc, char* argv[])
 
 	//create test graph
 	struct graph* G = Graph(fd);	 //actually get graph object
-<<<<<<< HEAD
 	struct queue* q = queue_new();
-=======
-	printf("bft:: Print graph \n");
-	print_graph(G);
-	
-    struct queue* q = queue_new();
->>>>>>> cdd48142b1738c67a06645c574f01366f6678f44
-	
-	printf("madde graph now printing\n");
 
+	printf("bft:: Print graph \n");
 	//print_graph(G);
 
 	unsigned long curr_node= strtoul(argv[2],NULL,10); 
@@ -87,7 +79,6 @@ int main(int argc, char* argv[])
 			if(!visited[(int)curr_node-1]){
 				queue_print_element(q->head);
 				nbrs = get_nbrs(G,curr_node);
-				printf("here2");
 				if(nbrs != NULL){
 					degree = get_deg(G, curr_node);
 					printf("The neighbors of %lu are ", curr_node);
@@ -97,6 +88,7 @@ int main(int argc, char* argv[])
 						printf(" %lu",nbrs[i]);
 						//TODO: watch out for array index out of bound
 					}
+					printf("\n");
 				}
 				visited[(int)curr_node-1]=true;
 				count++;
@@ -126,8 +118,7 @@ bool queue_add_element(struct queue* s, const unsigned long i)
  
   p->num = i;
   p->next = NULL;
- 
- 
+  
   if( NULL == s )
     {
       printf("Queue not initialized\n");

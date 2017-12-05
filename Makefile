@@ -1,4 +1,7 @@
 
+bfs: graph.c bft.c
+	gcc -lm -std=c99 graph.c bft.c -o bfs
+
 print: graph.c print_graph.c
 	gcc -lm -std=c99 graph.c print_graph.c -o print
 

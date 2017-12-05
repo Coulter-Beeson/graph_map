@@ -12,8 +12,6 @@
 #include <fcntl.h>
 #include <time.h>
 
-#include "graph.h"
-
 int main(int argc, char* argv[]){
 	
 	
@@ -54,8 +52,8 @@ int main(int argc, char* argv[]){
 	printf("shuffling %d times\n",K);
 
 	for(int i=0; i<K; i++){
-		printf("shuffle %d of %d)\n",i,K);
-		for(int j=0; j<N ;j++){
+		printf("shuffle %d of %d\n",i,K);
+		for(int j=1; j<=N ;j++){
 
 			v = 1 + rand() % N;
 			printf("swapping %d and %d\n",j, v);
