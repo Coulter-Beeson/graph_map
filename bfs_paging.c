@@ -86,17 +86,12 @@ static void * fault_handler_thread(void *arg){
 		int nready;
 		pollfd.fd = uffd;
 		pollfd.events = POLLIN;
-		nready = poll(&pollfd, 1, -1);
+		nready = poll(&pollfd, 1, 10);
 		if (nready == -1)
 			errExit("poll");
-
-		printf("\nfault_handler_thread():\n");
-		printf("    poll() returns: nready = %d; "
-			"POLLIN = %d; POLLERR = %d\n", nready,
-		(pollfd.revents & POLLIN) != 0,
-		(pollfd.revents & POLLERR) != 0);
-
-		/* Read an event from the userfaultfd */
+		if(nready == 0){
+			continue;
+		}
 
 		nread = read(uffd, &msg, sizeof(msg));
 		if (nread == 0) {
@@ -163,7 +158,8 @@ static void * fault_handler_thread(void *arg){
 		perror("error unmapping page");
 		exit(EXIT_FAILURE);
 	}
-	
+
+	return NULL;	
 }
 
 int main(int argc, char *argv[]){
@@ -184,21 +180,13 @@ int main(int argc, char *argv[]){
 	}
 
 	page_size = sysconf(_SC_PAGE_SIZE);
-	printf("Page size is %d\n", page_size);
-
-
-	printf("creating graph from %s \n",argv[1]);
+	
 	struct graph* G = create_graphf(argv[1]);
-
-	print_graph(G);
 	len = get_len(G);
-	printf("length of graph file is %d \n",len);
 
 	/* Create and enable userfaultfd object */
-
 	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK);
-	if (uffd == -1)
-		errExit("userfaultfd");
+	if (uffd == -1) errExit("userfaultfd");
 
 	uffdio_api.api = UFFD_API;
 	uffdio_api.features = 0;
@@ -210,9 +198,6 @@ int main(int argc, char *argv[]){
 	actually touch the memory, it will be allocated via
 	the userfaultfd. */
 
-	//addr = 	G->map;
-	printf("Address returned by mmap() = %p\n", G->map);
-
 	/* Register the memory range of the mapping we just created for
 	handling by the userfaultfd object. In mode, we request to track
 	missing pages (i.e., pages that have not yet been faulted in). */
@@ -221,16 +206,13 @@ int main(int argc, char *argv[]){
 
 	addr = mmap(NULL, len, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-
-	printf("copying from G->map to addr\n");
+	
+	//fucky copying over to register region
 	memcpy(addr,G->map,len);
-
 	G->map = (unsigned long*) addr;
 
-	printf("address of addr = %p\n",addr);
-
-	uffdio_register.range.start = (unsigned long) addr;
-	uffdio_register.range.len = len;
+	uffdio_register.range.start = (unsigned long) addr+sizeof(unsigned long)*G->off;
+	uffdio_register.range.len = len - sizeof(unsigned long)*G->off;
 	uffdio_register.mode = UFFDIO_REGISTER_MODE_MISSING;
 	if (ioctl(uffd, UFFDIO_REGISTER, &uffdio_register) == -1)
 		errExit("ioctl-UFFDIO_REGISTER");
@@ -255,12 +237,10 @@ int main(int argc, char *argv[]){
 	//Application code goes here
 	bfs(G,1);
 
-	printf("bfs done\n");	
 	pthread_mutex_unlock(&mxq);
 	pthread_join(thr,NULL);
-	printf("application done running\n");
-
-	close_graph(G);
+	
+	close_graph(G);	
 
 	if(munmap(addr,len) == -1){
 		perror("error unmapping addr");
