@@ -29,9 +29,22 @@ Licensed under the GNU General Public License version 2 or later.
 struct handler_arg{
 	struct graph* g;
 	long uffd;
+	pthread_mutex_t* lock;
 };
 
 static int page_size;
+
+int needQuit(pthread_mutex_t *mtx){
+  switch(pthread_mutex_trylock(mtx)) {
+    case 0: /* if we got the lock, unlock and return 1 (true) */
+      pthread_mutex_unlock(mtx);
+      return 1;
+    case EBUSY: /* return 0 (false) if the mutex was locked */
+      return 0;
+  }
+  return 1;
+}
+
 static void * fault_handler_thread(void *arg){
 	static struct uffd_msg msg;	/* Data read from userfaultfd */
 	static int fault_cnt = 0;	/* Number of faults so far handled */
@@ -43,11 +56,14 @@ static void * fault_handler_thread(void *arg){
 
 	struct handler_arg* hargs = (struct handler_arg*) arg;
 
+	//force output
+	setvbuf(stdout, NULL, _IOLBF, 0);
+
 	G = hargs->g;
 	uffd = hargs->uffd;
 
-	printf("uffd number: %d", uffd);
-	print_graph(G);
+	printf("uffd number: %d\n", uffd);
+	//print_graph(G);
 
 	/* Create a page that will be copied into the faulting region */
 
@@ -61,10 +77,11 @@ static void * fault_handler_thread(void *arg){
 	/* Loop, handling incoming events on the userfaultfd
 	file descriptor */
 
-	for (;;) {
+	//Trippy lock kill switch lets main signal a kill
+	pthread_mutex_t *mx = hargs->lock;
+	while( !needQuit(mx) ) {
 
 		/* See what poll() tells us about the userfaultfd */
-
 		struct pollfd pollfd;
 		int nready;
 		pollfd.fd = uffd;
@@ -139,6 +156,14 @@ static void * fault_handler_thread(void *arg){
 		printf("        (uffdio_copy.copy returned %lld)\n",
 			uffdio_copy.copy);
 	}
+
+	printf("Faulted a total of %d times \n", fault_cnt);
+
+	if(munmap(page,page_size) == -1){
+		perror("error unmapping page");
+		exit(EXIT_FAILURE);
+	}
+	
 }
 
 int main(int argc, char *argv[]){
@@ -149,6 +174,9 @@ int main(int argc, char *argv[]){
 	struct uffdio_api uffdio_api;
 	struct uffdio_register uffdio_register;
 	int s;
+
+	//force print everything
+	setvbuf(stdout, NULL, _IOLBF, 0);
 
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s my_graph\n", argv[0]);
@@ -209,7 +237,16 @@ int main(int argc, char *argv[]){
 
 	/* Create a thread that will process the userfaultfd events */
 
-	s = pthread_create(&thr, NULL, fault_handler_thread, (void *) uffd);
+	struct handler_arg* hargs = malloc(sizeof(struct handler_arg));
+
+	hargs->g = G;
+	hargs->uffd = uffd;
+	pthread_mutex_t mxq;
+	pthread_mutex_init(&mxq,NULL);
+	pthread_mutex_lock(&mxq);	
+	hargs->lock = &mxq;
+
+	s = pthread_create(&thr, NULL, fault_handler_thread, (void *) hargs);
 	if (s != 0) {
 		errno = s;
 		errExit("pthread_create");
@@ -217,6 +254,18 @@ int main(int argc, char *argv[]){
 
 	//Application code goes here
 	bfs(G,1);
+
+	printf("bfs done\n");	
+	pthread_mutex_unlock(&mxq);
+	pthread_join(thr,NULL);
+	printf("application done running\n");
+
+	close_graph(G);
+
+	if(munmap(addr,len) == -1){
+		perror("error unmapping addr");
+		exit(EXIT_FAILURE);
+	}
 
 	exit(EXIT_SUCCESS);
 }
