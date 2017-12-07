@@ -35,8 +35,7 @@ void stack_print( const struct stack* );
 void stack_print_element(const struct vertex* );
  
 int main(int argc, char* argv[]){
-	printf("starting BFS");
-
+	
 	if(argc != 3){
 		perror("takes a file pointer and initial node to traverse graph from as args");
 		exit(EXIT_FAILURE);
