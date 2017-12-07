@@ -32,6 +32,8 @@ struct graph* Graph(int fd){
 		exit(EXIT_FAILURE);
 	}
 
+	printf("length of file being mapped: %d\n",length);
+
 	//printf("mapping file\n");
 	unsigned long* map = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
@@ -68,6 +70,12 @@ struct graph* Graph(int fd){
 	return g;
 }
 
+//Takes the name of an existing graph file
+struct graph* create_graphf(char* file){
+	int fd = open(file, O_RDWR, (mode_t)0600);
+	return Graph(fd);
+}
+
 //Closes the graph file and syncs the memory
 //This is required otherwise you're file will not be correct!
 void close_graph(struct graph* g){
@@ -86,6 +94,7 @@ void close_graph(struct graph* g){
 	//printf("Graph closed.\n");
 }
 
+//Linearly scans the adjacency list looking for the entry
 bool get_edge(struct graph* g, unsigned long u, unsigned long v){
 	unsigned long d = get_deg(g,u);
 	unsigned long o = get_off(g,u);
@@ -101,11 +110,9 @@ bool get_edge(struct graph* g, unsigned long u, unsigned long v){
 	return false;
 }
 
-//INcreases the edge count in both the object and the file
+//Icreases the edge count in both the object and the file
 void inc_edge_count(struct graph* g, unsigned long u, unsigned long v){
-
 	g->M++;
-
 	g->map[1]++;
 }
 
@@ -134,6 +141,15 @@ void add_edge(struct graph* g, unsigned long u, unsigned long v){
 
 	inc_edge_count(g,u,v);
 
+}
+
+//Returns the size of the underlying file in bytes
+unsigned long get_len(struct graph* g){
+	unsigned long page_size = sysconf(_SC_PAGESIZE);
+	unsigned long size_header = g->off*(sizeof(unsigned long));
+	unsigned long num_pages_mat = (g->N*g->D*(sizeof(unsigned long))/page_size)+1  ;
+
+	return size_header+page_size*num_pages_mat;
 }
 
 unsigned long get_off(struct graph* g, unsigned long u){
@@ -194,8 +210,9 @@ void print_graph(struct graph* g){
 
 }
 
+//Swaps the position of the adjacency lists for u and v
+//Effectively can be used to change which page a node resides on. 
 void swap_nodes(struct graph* g, unsigned long u, unsigned long v){
-	
 
 	int d_u = get_deg(g,u);
 	int d_v = get_deg(g,v);
@@ -204,6 +221,7 @@ void swap_nodes(struct graph* g, unsigned long u, unsigned long v){
 	unsigned long* nbr_v = get_nbrs(g,v);
 
 	//write down the shorter of the two
+	//TODO abstract the body of this if to its own method
 	
 	if(d_u <= d_v){
 		unsigned long tmp[d_u];

@@ -27,8 +27,11 @@ struct queue
   struct vertex* tail;
 };
 
+void bfs(struct graph*,unsigned long);
 
+bool is_empty(struct queue*);
 bool queue_add_element( struct queue*, const unsigned long);
+unsigned long pop(struct queue*);
 bool queue_remove_element( struct queue*);
 struct queue* queue_new(void);
 struct queue* queue_free( struct queue* );
@@ -56,54 +59,58 @@ int main(int argc, char* argv[])
 
 	//create test graph
 	struct graph* G = Graph(fd);	 //actually get graph object
+  //printf("bft:: Print graph \n");
+
 	struct queue* q = queue_new();
 
-	//printf("bft:: Print graph \n");
-	//print_graph(G);
+	print_graph(G);
 
-	unsigned long curr_node= strtoul(argv[2],NULL,10); 
-	printf("Traversing from node %lu \n", curr_node);
+	unsigned long start_node= strtoul(argv[2],NULL,10); 
+
+	printf("calling BFS\n");
+
+	bfs(G,start_node);
+
+	return 0;
+}
+
+
+void bfs(struct graph* G, unsigned long u){
 	//TODO: check if node is valid node..ie  it actually exists
-	queue_add_element(q, curr_node);//add node to q. 
-	unsigned long i; 
-	unsigned long degree;
+	
+	printf("Traversing from node %lu \n", u);
+	struct queue* q = queue_new();
+	queue_add_element(q, u); 
+
 	unsigned long* nbrs;
+	unsigned long curr_node,degree;
 	int count = 0; //for testing, to see how manny nodes were visited
-	bool visited[N]= {false};
+	bool visited[N+1]= {false};
 	
 	printf("BEGIN TRAVERSAL : \n");
-	   //get first element of queue. get its neighbors n add to queue if not already visited. add that node to visited
-	   while(q->head != NULL)
-	   {
-			curr_node  = q->head->num;
-			if(!visited[(int)curr_node-1]){
-				queue_print_element(q->head);
-				nbrs = get_nbrs(G,curr_node);
-				if(nbrs != NULL){
-					degree = get_deg(G, curr_node);
-					//	printf("The neighbors of %lu are ", curr_node);
-					for(i=0;i< degree;i=i+1)
-					{
-						queue_add_element(q, nbrs[i]);
-						printf(" %lu",nbrs[i]);
-						//TODO: watch out for array index out of bound
-					}
-					//	printf("\n");
-				}
-				visited[(int)curr_node-1]=true;
-				count++;
-				printf("\n");
-			}
-			queue_remove_element(q); //removes the head
-	   }
+
+	while(!is_empty(q)){
+		curr_node = pop(q);
+		if(visited[curr_node]){continue;}		
+		nbrs = get_nbrs(G,curr_node);
+		degree=get_deg(G,curr_node);
+		for(unsigned long i=0; i<degree; i++){
+			queue_add_element(q,nbrs[i]);
+		}
+		visited[curr_node]=true;
+		count++;
+	}
+
 	printf("---- END TRAVERSAL ---- \n");
 	printf("Total nodes visited = %d\n", count);
-	close_graph(G);
-	//queue_print(visited);
- 	queue_free(q);   // always remember to free() the malloc()ed memory 
-	free(q);        //free() if list is kept separate from free()ing the structure, I think its a good design 
-	q = NULL;      // after free() always set that pointer to NULL, prevents dangling pointer
-	return 0;
+
+	//Clean Up
+	queue_free(q); 
+	free(q);  
+}
+
+bool is_empty(struct queue* q){
+	return (q->head == NULL);
 }
 
 bool queue_add_element(struct queue* s, const unsigned long i)
@@ -146,7 +153,13 @@ bool queue_add_element(struct queue* s, const unsigned long i)
  
   return true;
 }
- 
+
+unsigned long pop(struct queue* q){
+	unsigned long v = q->head->num;
+	queue_remove_element(q);
+	return v;
+}
+
 /* This is a queue and it is FIFO, so we will always remove the first element */
 bool queue_remove_element( struct queue* s )
 {

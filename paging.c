@@ -157,6 +157,8 @@
                errExit("mmap");
 
            printf("Address returned by mmap() = %p\n", addr);
+	   printf("length of file: %d\n",len);
+
 
            /* Register the memory range of the mapping we just created for
               handling by the userfaultfd object. In mode, we request to track
