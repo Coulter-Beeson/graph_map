@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	   }
 	printf("---- END TRAVERSAL ---- \n");
 	printf("Total nodes visited = %d\n", count);
-
+	close_graph(G);
 	//queue_print(visited);
  	queue_free(q);   // always remember to free() the malloc()ed memory 
 	free(q);        //free() if list is kept separate from free()ing the structure, I think its a good design 
