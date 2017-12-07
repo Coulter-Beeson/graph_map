@@ -1,16 +1,18 @@
 # graph_map
-dynamically partitioning graphs to improve locality
+dynamically partitioning graphs to improve locality </br>
 
 
 
 
-Run command examples
-1. to build edge to graph, graph obj
-->$ make e2g
-->$ ./e2g edgelistonly.txt 10 12 5 graphobj.g
+Run command examples </br>
+1. to build edge to graph, graph obj      </br>
+->$ make e2g                    </br>
+->$ ./e2g edgelistonly.txt 10 12 5 graphobj.g     </br>
 
-2. Run application 
-->$ make bfs
-->$ ./bfs graphobj.g 4
+</br>
+
+2. Run application        </br>
+->$ make bfs              </br>
+->$ ./bfs graphobj.g 4    </br>
 
 
