@@ -105,6 +105,19 @@ static void * fault_handler_thread(void *arg){
 		region. Vary the contents that are copied in, so that it
 		is more obvious that each fault is handled separately. */
 
+		//TODO this is where we build the page
+		//Does this cause fucky recursive faulting?
+		//if we fault in here is it just regular fault handling?
+		//Even if thats the case we batch all of our faults at once 
+		int b_addr = msg.arg.pagefault.address;
+		unsigned long offset = b_addr-(g->map)-(sizeof(unsigned long)*g->off);
+		offset = (offset/sizeof(unsigned long)) % g->D;
+
+		unsigned long* faulting_node = get_node_from_off(g,offset);
+
+		unsigned long* nbrs = get_nbrs(G,faulting_node);
+		
+
 		memset(page, 'A' + fault_cnt % 20, page_size);
 		fault_cnt++;
 
@@ -200,28 +213,8 @@ int main(int argc, char *argv[]){
 		errExit("pthread_create");
 	}
 
-	/* Main thread now touches memory in the mapping, touching
-	locations 1024 bytes apart. This will trigger userfaultfd
-	events for all pages in the region. */
-
-
 	//Application code goes here
 	bfs(G,1);
-
-
-	/*
-	int l;
-	l = 0xf;    // Ensure that faulting address is not on a page
-	boundary, in order to test that we correctly
-	handle that case in fault_handling_thread()
-	while (l < len) {
-		char c = addr[l];
-		printf("Read address %p in main(): ", addr + l);
-		printf("%c\n", c);
-		l += 1024;
-		usleep(100000);         // Slow things down a little 
-	}
-	*/
 
 	exit(EXIT_SUCCESS);
 }

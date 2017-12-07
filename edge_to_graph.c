@@ -52,12 +52,9 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	//int PAGE_SIZE = 4096;
-	
-	//TODO Replaced this to get the page size
 	unsigned long PAGE_SIZE = sysconf(_SC_PAGESIZE);
 
-	unsigned long header_size = sizeof(unsigned long)*(3 + 2*N); //N, M, D(3) [o,d]*N in 
+	unsigned long header_size = sizeof(unsigned long)*(3 + 3*N); //N, M, D(3) [o,d]*N in 
 	printf("The header is (%d x 2 + 5) X 4 = %d bytes\n", N, header_size);
 	printf("The pages are %d bytes\n", PAGE_SIZE);
 	
@@ -152,6 +149,7 @@ int main(int argc, char *argv[]) {
 	for(unsigned long i=0; i<my_graph->N ;i++){
 		my_graph->map[3+2*i]=i;
 		my_graph->map[3+2*i+1]=0;
+		my_graph->map[3+2*my_graph->N+i]=i;
 	}
 
 	//print_graph(my_graph);

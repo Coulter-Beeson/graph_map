@@ -52,13 +52,14 @@ struct graph* Graph(int fd){
 	g->M = map[1];	//Number of edges
 	g->D = map[2];	//Upper bound on max degree
 	
+
 	//printf("N = %d M = %d D = %d\n", g->N, g->M, g->D);
 
 	unsigned long page_size = sysconf(_SC_PAGESIZE);
 	
 	//printf("page size is : %d now calculate offset\n",page_size);
 
-	int num_pages = ceil((sizeof(unsigned long)*(3+2*g->N)/(double)page_size));
+	int num_pages = ceil((sizeof(unsigned long)*(3+3*g->N)/(double)page_size));
 
 	//printf("the number of pages for the header is %d\n",num_pages);
 
@@ -159,7 +160,12 @@ unsigned long get_off(struct graph* g, unsigned long u){
 
 void set_off(struct graph* g, unsigned long u, unsigned long off){
 	g->map[3+2*(u-1)]=off;
+	g->map[3+2*g->N+off]=u;
 }
+
+unsigned long get_node_from_off(struct graph* g,unsigned long off){
+	return g->map[3+2*g->N+off];
+} 
 
 unsigned long get_deg(struct graph* g, unsigned long u){
 	//printf("in get_deg\n");
