@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 	struct graph* G = Graph(fd);	 //actually get graph object
 	struct queue* q = queue_new();
 
-	printf("bft:: Print graph \n");
+	//printf("bft:: Print graph \n");
 	//print_graph(G);
 
 	unsigned long curr_node= strtoul(argv[2],NULL,10); 
@@ -81,14 +81,14 @@ int main(int argc, char* argv[])
 				nbrs = get_nbrs(G,curr_node);
 				if(nbrs != NULL){
 					degree = get_deg(G, curr_node);
-					printf("The neighbors of %lu are ", curr_node);
+					//	printf("The neighbors of %lu are ", curr_node);
 					for(i=0;i< degree;i=i+1)
 					{
 						queue_add_element(q, nbrs[i]);
 						printf(" %lu",nbrs[i]);
 						//TODO: watch out for array index out of bound
 					}
-					printf("\n");
+					//	printf("\n");
 				}
 				visited[(int)curr_node-1]=true;
 				count++;
