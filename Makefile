@@ -1,4 +1,7 @@
 
+bfsp: graph.c bft.c bfs_paging.c
+	gcc -lm -pthread -std=c99 graph.c bft.c bfs_paging.c -o bfsp
+
 bft: graph.c bft.c
 	gcc -lm -std=c99 graph.c bft.c -o bft
 

@@ -20,6 +20,8 @@ Licensed under the GNU General Public License version 2 or later.
 #include <poll.h>
 
 #include "graph.h"
+#include "bft.h"
+
 
 #define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
 } while (0)
@@ -39,7 +41,7 @@ static void * fault_handler_thread(void *arg){
 	struct uffdio_copy uffdio_copy;
 	ssize_t nread;
 
-	hargs = (struct handler_arg)arg;
+	struct handler_arg* hargs = (struct handler_arg*) arg;
 
 	G = hargs->g;
 	uffd = hargs->uffd;
@@ -109,11 +111,11 @@ static void * fault_handler_thread(void *arg){
 		//Does this cause fucky recursive faulting?
 		//if we fault in here is it just regular fault handling?
 		//Even if thats the case we batch all of our faults at once 
-		int b_addr = msg.arg.pagefault.address;
-		unsigned long offset = b_addr-(g->map)-(sizeof(unsigned long)*g->off);
-		offset = (offset/sizeof(unsigned long)) % g->D;
+		unsigned long b_addr = msg.arg.pagefault.address;
+		unsigned long offset = b_addr-( (unsigned long) G->map)-(sizeof(unsigned long)*G->off);
+		offset = (offset/sizeof(unsigned long)) % G->D;
 
-		unsigned long* faulting_node = get_node_from_off(g,offset);
+		unsigned long faulting_node = get_node_from_off(G,offset);
 
 		unsigned long* nbrs = get_nbrs(G,faulting_node);
 		
@@ -195,7 +197,7 @@ int main(int argc, char *argv[]){
 	printf("copying from G->map to addr\n");
 	memcpy(addr,G->map,len);
 
-	G->map = addr;
+	G->map = (unsigned long*) addr;
 
 	printf("address of addr = %p\n",addr);
 

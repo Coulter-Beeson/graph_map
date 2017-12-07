@@ -13,33 +13,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-
-#define N 4039 //num of nodes
-
-struct vertex{
-	unsigned long num;
-	struct vertex* next;
-};
-
-struct queue
-{
-  struct vertex* head;
-  struct vertex* tail;
-};
-
-void bfs(struct graph*,unsigned long);
-
-bool is_empty(struct queue*);
-bool queue_add_element( struct queue*, const unsigned long);
-unsigned long pop(struct queue*);
-bool queue_remove_element( struct queue*);
-struct queue* queue_new(void);
-struct queue* queue_free( struct queue* );
-void queue_print( const struct queue* );
-void queue_print_element(const struct vertex* );
+#include "bft.h"
 
 
- 
+/* 
 int main(int argc, char* argv[])
 {
 	printf("starting BFS");
@@ -72,7 +49,7 @@ int main(int argc, char* argv[])
 	bfs(G,start_node);
 
 	return 0;
-}
+}*/
 
 
 void bfs(struct graph* G, unsigned long u){
@@ -85,7 +62,8 @@ void bfs(struct graph* G, unsigned long u){
 	unsigned long* nbrs;
 	unsigned long curr_node,degree;
 	int count = 0; //for testing, to see how manny nodes were visited
-	bool visited[N+1]= {false};
+	bool* visited = malloc(sizeof(bool)*(G->N+1));
+	memset(visited, false, sizeof visited);
 	
 	printf("BEGIN TRAVERSAL : \n");
 

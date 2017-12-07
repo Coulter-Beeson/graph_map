@@ -16,7 +16,8 @@ struct graph* create_graphf(char* file);
 
 bool get_edge(struct graph* g, unsigned long u, unsigned long v);
 void add_edge(struct graph* g, unsigned long u, unsigned long v);
-unsigned long* get_nbrs(struct graph*, unsigned long u);
+unsigned long* get_nbrs(struct graph* g, unsigned long u);
+unsigned long get_node_from_off(struct graph*, unsigned long off);
 unsigned long get_off(struct graph* g, unsigned long u);
 unsigned long get_deg(struct graph* g, unsigned long u);
 unsigned long get_len(struct graph* g);
