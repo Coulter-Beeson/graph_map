@@ -59,8 +59,11 @@ int main(int argc, char* argv[])
 
 	//create test graph
 	struct graph* G = Graph(fd);	 //actually get graph object
-	printf("bft:: Print graph \n");
-	//print_graph(G);
+  //printf("bft:: Print graph \n");
+
+	struct queue* q = queue_new();
+
+	print_graph(G);
 
 	unsigned long start_node= strtoul(argv[2],NULL,10); 
 
@@ -85,6 +88,7 @@ void bfs(struct graph* G, unsigned long u){
 	bool visited[N+1]= {false};
 	
 	printf("BEGIN TRAVERSAL : \n");
+
 	while(!is_empty(q)){
 		curr_node = pop(q);
 		if(visited[curr_node]){continue;}		
