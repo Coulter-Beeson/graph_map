@@ -129,10 +129,14 @@ static void * fault_handler_thread(void *arg){
 
 		unsigned long faulting_node = get_node_from_off(G,offset);
 
+		printf("faulting_node: %d". faulting_node);
+		//TODO This ittself shoud fault
 		unsigned long* nbrs = get_nbrs(G,faulting_node);
 		
 
 		memset(page, 'A' + fault_cnt % 20, page_size);
+
+
 		fault_cnt++;
 
 		uffdio_copy.src = (unsigned long) page;
