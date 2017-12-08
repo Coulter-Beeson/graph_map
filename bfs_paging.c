@@ -129,7 +129,7 @@ static void * fault_handler_thread(void *arg){
 
 		unsigned long faulting_node = get_node_from_off(G,offset);
 
-		printf("faulting_node: %d". faulting_node);
+		printf("faulting_node: %d", faulting_node);
 		//TODO This ittself shoud fault
 		unsigned long* nbrs = get_nbrs(G,faulting_node);
 		
