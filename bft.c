@@ -52,16 +52,16 @@ int main(int argc, char* argv[])
 }*/
 
 
-void bfs(struct graph* G, unsigned long u){
+void bfs(struct graph* G, int u){
 	//TODO: check if node is valid node..ie  it actually exists
 	
 	printf("Traversing from node %lu \n", u);
 	struct queue* q = queue_new();
 	queue_add_element(q, u); 
 
-	unsigned long* nbrs;
-	unsigned long curr_node,degree;
-	int count = 0; //for testing, to see how manny nodes were visited
+	int* nbrs;
+	int  curr_node,degree;
+	int  count = 0; //for testing, to see how manny nodes were visited
 	bool* visited = malloc(sizeof(bool)*(G->N+1));
 	memset(visited, false, sizeof visited);
 	
@@ -73,7 +73,7 @@ void bfs(struct graph* G, unsigned long u){
 		//printf("curr_node %lu\n",curr_node);
 		nbrs = get_nbrs(G,curr_node);
 		degree=get_deg(G,curr_node);
-		for(unsigned long i=0; i<degree; i++){
+		for(int i=0; i<degree; i++){
 			queue_add_element(q,nbrs[i]);
 		}
 		visited[curr_node]=true;
@@ -92,7 +92,7 @@ bool is_empty(struct queue* q){
 	return (q->head == NULL);
 }
 
-bool queue_add_element(struct queue* s, const unsigned long i)
+bool queue_add_element(struct queue* s, const int i)
 {
   struct vertex* p = malloc( 1 * sizeof(*p) );
  
@@ -134,7 +134,7 @@ bool queue_add_element(struct queue* s, const unsigned long i)
 }
 
 unsigned long pop(struct queue* q){
-	unsigned long v = q->head->num;
+	int v = q->head->num;
 	queue_remove_element(q);
 	return v;
 }

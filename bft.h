@@ -2,7 +2,7 @@
 #define BFT_H_
 
 struct vertex{
-	unsigned long num;
+	int num;
 	struct vertex* next;
 };
 
@@ -12,10 +12,10 @@ struct queue
   struct vertex* tail;
 };
 
-void bfs(struct graph*,unsigned long);
+void bfs(struct graph*,int);
 
 bool is_empty(struct queue*);
-bool queue_add_element( struct queue*, const unsigned long);
+bool queue_add_element( struct queue*, const int);
 unsigned long pop(struct queue*);
 bool queue_remove_element( struct queue*);
 struct queue* queue_new(void);

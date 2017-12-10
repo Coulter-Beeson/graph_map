@@ -25,7 +25,7 @@ int main(int argc, char* argv[]){
 	setvbuf (stdout, NULL, _IONBF, 0);
 
 	//The node to start on
-	unsigned long K = atoi(argv[2]);
+	int K = atoi(argv[2]);
 
 	printf("Opening file\n");
 
@@ -44,12 +44,12 @@ int main(int argc, char* argv[]){
 	//srand(time(NULL));
 	//TODO Seeded with a constant for testing
 	
-	unsigned long N = g->N;
+	int N = g->N;
 
-	bool isVisited[N];
+	bool isVisited[N+1];
 	
 	//all nodes are unvisited
-	for (int i = 0; i < N; i++){
+	for (int i = 0; i <= N; i++){
 		isVisited[i] = false;
 	}
 	//order of nodes to visit
@@ -57,9 +57,9 @@ int main(int argc, char* argv[]){
 	queue_add_element(q, K);
 	
 	
-	unsigned long* nbrs;
-	unsigned long curr_node,degree;
-	unsigned long order = 0; //for testing, to see how manny nodes were visited
+	int* nbrs;
+	int curr_node,degree;
+	int order = 0; //for testing, to see how manny nodes were visited
 	
 	printf("BEGIN TRAVERSAL : \n");
 
@@ -68,14 +68,14 @@ int main(int argc, char* argv[]){
 		curr_node = pop(q);
 			
 		if(!isVisited[curr_node]) {
-			unsigned long o = get_off(g, curr_node);
-			unsigned long n = get_node_from_off(g, order);
+			int o = get_off(g, curr_node);
+			int n = get_node_from_off(g, order);
 			//printf("in node %d in offset %d needs to go to %d\n", curr_node, o, order); 
 			//printf("node %d is currently in offset %d\n", n, order);
 			isVisited[curr_node] = true;
 			nbrs = get_nbrs(g,curr_node);
 			degree=get_deg(g,curr_node);
-			for(unsigned long i=0; i<degree; i++){
+			for(int i=0; i<degree; i++){
 				queue_add_element(q,nbrs[i]);
 			}
 			

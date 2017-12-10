@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
 	srand(1);	
 
 
-	unsigned long N = g->N;
+	int N = g->N;
 
 	int v;
 

@@ -3,36 +3,36 @@
 
 #include <stdbool.h>
 
-typedef unsigned long ul;
+typedef int ul;
 
 struct graph{
-	ul* map; //The underlying mmap'd file
-	ul N; // The number of nodes
-	ul M; // The number of edges
-	ul D; // Upper bound on maximum degree
+	int* map; //The underlying mmap'd file
+	int N; // The number of nodes
+	int M; // The number of edges
+	int D; // Upper bound on maximum degree
 	ul off; // number of pages in header
 };
 
 struct graph* Graph(int fd);
 struct graph* create_graphf(char* file);
 
-bool get_edge(struct graph* g, unsigned long u, unsigned long v);
-void add_edge(struct graph* g, unsigned long u, unsigned long v);
-unsigned long* get_nbrs(struct graph* g, unsigned long u);
-unsigned long get_node_from_off(struct graph*, unsigned long off);
-unsigned long get_off(struct graph* g, unsigned long u);
-unsigned long get_deg(struct graph* g, unsigned long u);
-unsigned long get_len(struct graph* g);
-void inc_deg(struct graph* g, unsigned long u);
-void inc_edge_count(struct graph* g, unsigned long u, unsigned long v);
+bool get_edge(struct graph* g, int u, int v);
+void add_edge(struct graph* g, int u, int v);
+int* get_nbrs(struct graph* g, int u);
+int get_node_from_off(struct graph*, int off);
+int get_off(struct graph* g, int u);
+int get_deg(struct graph* g, int u);
+int get_len(struct graph* g);
+void inc_deg(struct graph* g, int u);
+void inc_edge_count(struct graph* g, int u, int v);
 
-void print_edge_list(struct graph* g, unsigned long u);
-void print_node(struct graph* g, unsigned long u);
+void print_edge_list(struct graph* g, int u);
+void print_node(struct graph* g, int u);
 void print_graph(struct graph* g);
 void print_offset(struct graph* g);
 void print_degrees(struct graph* g);
 
 void close_graph(struct graph* g);
-void swap_nodes(struct graph* g, unsigned long u, unsigned long v);
+void swap_nodes(struct graph* g, int u, int v);
 
 #endif // GRAPH_H_

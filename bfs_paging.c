@@ -30,7 +30,7 @@ typedef unsigned long ul;
 struct handler_arg{
 	struct graph* g;
 	long uffd;
-	ul* start;
+	void* start;
 	pthread_mutex_t* lock;
 };
 
@@ -57,7 +57,7 @@ static void * fault_handler_thread(void *arg){
 	ssize_t nread;
 
 	struct handler_arg* hargs = (struct handler_arg*) arg;
-	ul* start_addr;
+	void* start_addr;
 
 
 	//force output
@@ -132,14 +132,14 @@ static void * fault_handler_thread(void *arg){
 		//if we fault in here is it just regular fault handling?
 		//Even if thats the case we batch all of our faults at once 
 		ul b_addr = msg.arg.pagefault.address;
-		ul offset = b_addr-( (ul) start_addr)-(sizeof(ul)*G->off);
+		ul offset = b_addr-( (ul) start_addr)-(sizeof(int)*G->off);
 	
-		offset = (offset/sizeof(ul));
+		offset = (offset/sizeof(int));
 		offset = offset / G->D;
 
 		//printf("offset is %lu\n", offset);
 
-		ul faulting_node = get_node_from_off(G,offset);
+		int faulting_node = get_node_from_off(G,(int) offset);
 
 		if(faulting_node == 0) {
 			perror("fault_node is zero");
@@ -148,7 +148,7 @@ static void * fault_handler_thread(void *arg){
 
 		//printf("faulting_node: %d\n", faulting_node);
 
-		ul* nbrs = get_nbrs(G,faulting_node);
+		int* nbrs = get_nbrs(G,faulting_node);
 
 		int page_num = ((b_addr - ((ul) start_addr))/page_size) ;
 
@@ -229,7 +229,7 @@ int main(int argc, char *argv[]){
 	struct graph* app_G = Graph(fd);
 	len = get_len(app_G);
 
-	ul size_of_offset = sizeof(ul)*app_G->off;
+	ul size_of_offset = sizeof(int)*app_G->off;
 
 	printf("the length of the graph is %d\n", len);
 
@@ -243,7 +243,7 @@ int main(int argc, char *argv[]){
 
 	struct graph* handler_G = Graph(fd); 
 	memcpy(addr,handler_G->map,size_of_offset);
-	app_G->map = (ul*) addr;
+	app_G->map = (int*) addr;
 
 	//Register Adjacency List Region (empty region of anon file)
 	uffdio_register.range.start = (ul) addr + size_of_offset;
@@ -258,7 +258,7 @@ int main(int argc, char *argv[]){
 
 	hargs->g = handler_G;
 	hargs->uffd = uffd;
-	hargs->start = (ul*) addr;
+	hargs->start = (int*) addr;
 	pthread_mutex_t mxq;
 	pthread_mutex_init(&mxq,NULL);
 	pthread_mutex_lock(&mxq);	
@@ -286,13 +286,13 @@ int main(int argc, char *argv[]){
 
 	printf("size of page %d\n",page_size);
 
-	printf("size of ul %d\n", sizeof(ul));
+	printf("size of int %d\n", sizeof(int));
 	
-	printf("size of D %lu\n", app_G->D);
+	printf("size of D %d\n", app_G->D);
 
-	printf("sie of line: %lu\n", sizeof(ul)*app_G->D);
+	printf("sie of line: %d\n", sizeof(int)*app_G->D);
 
-	printf("how many pages per line %lu\n", 1+(sizeof(ul)*app_G->D)/page_size );
+	printf("how many pages per line %d\n", 1+(sizeof(int)*app_G->D)/page_size );
 
 
 	//TODO probably add some proper clean up so the proper regions get resynced with disk
