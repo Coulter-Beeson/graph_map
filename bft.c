@@ -70,6 +70,7 @@ void bfs(struct graph* G, unsigned long u){
 	while(!is_empty(q)){
 		curr_node = pop(q);
 		if(visited[curr_node]){continue;}		
+		printf("curr_node %lu\n",curr_node);
 		nbrs = get_nbrs(G,curr_node);
 		degree=get_deg(G,curr_node);
 		for(unsigned long i=0; i<degree; i++){

@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
 	for(unsigned long i=0; i<my_graph->N ;i++){
 		my_graph->map[3+2*i]=i;
 		my_graph->map[3+2*i+1]=0;
-		my_graph->map[3+2*my_graph->N+i]=i;
+		my_graph->map[3+2*my_graph->N+i]=i+1;
 	}
 
 	//print_graph(my_graph);
