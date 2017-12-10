@@ -2,8 +2,8 @@
 * sets nodes in bft order
 * 
 */
-
-#include "graph_part.h"
+#include "graph.h"
+//#include "graph_part.h"
 #include "bft.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,8 +70,8 @@ int main(int argc, char* argv[]){
 		if(!isVisited[curr_node]) {
 			unsigned long o = get_off(g, curr_node);
 			unsigned long n = get_node_from_off(g, order);
-			printf("in node %d in offset %d needs to go to %d\n", curr_node, o, order); 
-			printf("node %d is currently in offset %d\n", n, order);
+			//printf("in node %d in offset %d needs to go to %d\n", curr_node, o, order); 
+			//printf("node %d is currently in offset %d\n", n, order);
 			isVisited[curr_node] = true;
 			nbrs = get_nbrs(g,curr_node);
 			degree=get_deg(g,curr_node);
