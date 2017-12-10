@@ -133,9 +133,26 @@ static void * fault_handler_thread(void *arg){
 		//Even if thats the case we batch all of our faults at once 
 		ul b_addr = msg.arg.pagefault.address;
 		ul offset = b_addr-( (ul) start_addr)-(sizeof(ul)*G->off);
-		offset = (offset/sizeof(ul)) % G->D;
+	
+		printf("offset is %lu\n", offset);
+
+		offset = (offset/sizeof(ul));
+
+		printf("offset is %lu\n", offset);
+		printf("max deg %lu\n", G->D);
+
+
+		offset = offset / G->D;
+
+		printf("offset is %lu\n", offset);
 
 		ul faulting_node = get_node_from_off(G,offset);
+
+
+		if(faulting_node == 0) {
+			perror("fault_node is zero");
+			exit(EXIT_FAILURE);
+		}
 
 		printf("faulting_node: %d\n", faulting_node);
 

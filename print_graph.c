@@ -6,16 +6,17 @@
 
 int main(int argc, char* argv[]){
 
-	if(argc!=2){
-		perror("Expects a graph");
+	if(argc!=3){
+		perror("Expects a graph and a numer 1-3");
 		exit(EXIT_FAILURE);
 	}
 
 	int fd = open(argv[1],O_RDWR,(mode_t)0600);
-
+	int mode = atoi(argv[2]);
 	struct graph* G = Graph(fd);
 
-	print_graph(G);
+	if(mode==0) print_graph(G);
+	if(mode==1) print_offset(G);
 
 	close_graph(G);
 
