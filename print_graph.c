@@ -17,6 +17,7 @@ int main(int argc, char* argv[]){
 
 	if(mode==0) print_graph(G);
 	if(mode==1) print_offset(G);
+	if(mode==2) print_degrees(G);
 
 	close_graph(G);
 

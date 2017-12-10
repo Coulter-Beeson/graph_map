@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
 	printf("BEGIN TRAVERSAL : \n");
 
 	while(!is_empty(q)){
-		queue_print(q);
+		//queue_print(q);
 		curr_node = pop(q);
 			
 		if(!isVisited[curr_node]) {
