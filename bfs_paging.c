@@ -67,9 +67,11 @@ static void * fault_handler_thread(void *arg){
 	uffd = hargs->uffd;
 	start_addr = hargs->start;
 
+	/*
 	printf("uffd number: %d\n", uffd);
 	print_graph(G);
 	printf("start address of region %p\n", start_addr);
+	*/
 
 	/* Create a page that will be copied into the faulting region */
 
@@ -135,14 +137,23 @@ static void * fault_handler_thread(void *arg){
 
 		ul faulting_node = get_node_from_off(G,offset);
 
-		printf("faulting_node: %d", faulting_node);
-		//TODO This ittself shoud fault
+		printf("faulting_node: %d\n", faulting_node);
+
 		ul* nbrs = get_nbrs(G,faulting_node);
-		
-		memset(page, 'A' + fault_cnt % 20, page_size);
+		printf("got nbrs\n");
+
+		int page_num = (offset / page_size) + 1;
+		printf("page num: %d\n" , page_num);
+	
+
+		printf("graph map starts at addres %p\n",G->map);
+		printf("copying from address %p\n", ((void *) G->map)+page_num*page_size); 
+
+		memcpy(page, ((void *)  G->map)+page_num*page_size, page_size);
 
 		fault_cnt++;
 
+		printf("setting up the copy\n");
 		uffdio_copy.src = (ul) page;
 
 		/* We need to handle page faults in units of pages(!).
@@ -153,6 +164,7 @@ static void * fault_handler_thread(void *arg){
 		uffdio_copy.len = page_size;
 		uffdio_copy.mode = 0;
 		uffdio_copy.copy = 0;
+		printf("calling ioctl\n");
 		if (ioctl(uffd, UFFDIO_COPY, &uffdio_copy) == -1)
 			errExit("ioctl-UFFDIO_COPY");
 
