@@ -29,6 +29,8 @@ void inc_edge_count(struct graph* g, unsigned long u, unsigned long v);
 void print_edge_list(struct graph* g, unsigned long u);
 void print_node(struct graph* g, unsigned long u);
 void print_graph(struct graph* g);
+void print_offset(struct graph* g);
+
 void close_graph(struct graph* g);
 void swap_nodes(struct graph* g, unsigned long u, unsigned long v);
 

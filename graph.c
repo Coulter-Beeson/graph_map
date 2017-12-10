@@ -177,6 +177,19 @@ void inc_deg(struct graph* g, ul u){
 	g->map[3 + 2*(u-1)+1] += 1;
 }
 
+void print_offset(struct graph* g){
+	printf("[ ");
+
+	for(ul i=0; i<g->N; i++){
+		printf("%lu:%lu",i, g->map[3+2*g->N+i]);
+
+		if(i != g->N-1) printf(",");
+	}
+
+	printf(" ]\n");
+
+}
+
 //prints a single node's offset and degree
 void print_node(struct graph* g, ul u){
 	printf("(%d,%d)",get_off(g,u),get_deg(g,u));
@@ -202,6 +215,8 @@ void print_graph(struct graph* g){
 
 	printf("N:%d,M:%d,D:%d\n",g->N,g->M,g->D);
 	
+	print_offset(g);
+
 	//printf("printing nodes\n");
 	for(ul i=1; i<=g->N; i++){
 		printf("%d",i);
