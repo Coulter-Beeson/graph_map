@@ -22,6 +22,7 @@ Licensed under the GNU General Public License version 2 or later.
 #include "graph.h"
 #include "bft.h"
 
+typedef unsigned long ul;
 
 #define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
 } while (0)
@@ -63,7 +64,8 @@ static void * fault_handler_thread(void *arg){
 	uffd = hargs->uffd;
 
 	printf("uffd number: %d\n", uffd);
-	//print_graph(G);
+	
+	print_graph(G);
 
 	/* Create a page that will be copied into the faulting region */
 
@@ -123,15 +125,15 @@ static void * fault_handler_thread(void *arg){
 		//Does this cause fucky recursive faulting?
 		//if we fault in here is it just regular fault handling?
 		//Even if thats the case we batch all of our faults at once 
-		unsigned long b_addr = msg.arg.pagefault.address;
-		unsigned long offset = b_addr-( (unsigned long) G->map)-(sizeof(unsigned long)*G->off);
-		offset = (offset/sizeof(unsigned long)) % G->D;
+		ul b_addr = msg.arg.pagefault.address;
+		ul offset = b_addr-( (ul) G->map)-(sizeof(ul)*G->off);
+		offset = (offset/sizeof(ul)) % G->D;
 
-		unsigned long faulting_node = get_node_from_off(G,offset);
+		ul faulting_node = get_node_from_off(G,offset);
 
 		printf("faulting_node: %d", faulting_node);
 		//TODO This ittself shoud fault
-		unsigned long* nbrs = get_nbrs(G,faulting_node);
+		ul* nbrs = get_nbrs(G,faulting_node);
 		
 
 		memset(page, 'A' + fault_cnt % 20, page_size);
@@ -139,12 +141,12 @@ static void * fault_handler_thread(void *arg){
 
 		fault_cnt++;
 
-		uffdio_copy.src = (unsigned long) page;
+		uffdio_copy.src = (ul) page;
 
 		/* We need to handle page faults in units of pages(!).
 		So, round faulting address down to page boundary */
 
-		uffdio_copy.dst = (unsigned long) msg.arg.pagefault.address &
+		uffdio_copy.dst = (ul) msg.arg.pagefault.address &
 					~(page_size - 1);
 		uffdio_copy.len = page_size;
 		uffdio_copy.mode = 0;
@@ -169,7 +171,7 @@ static void * fault_handler_thread(void *arg){
 int main(int argc, char *argv[]){
 	long uffd;          /* userfaultfd file descriptor */
 	char *addr;         /* Start of region handled by userfaultfd */
-	unsigned long len;  /* Length of region handled by userfaultfd */
+	ul len;  /* Length of region handled by userfaultfd */
 	pthread_t thr;      /* ID of thread that handles page faults */
 	struct uffdio_api uffdio_api;
 	struct uffdio_register uffdio_register;
@@ -185,9 +187,6 @@ int main(int argc, char *argv[]){
 
 	page_size = sysconf(_SC_PAGE_SIZE);
 	
-	struct graph* G = create_graphf(argv[1]);
-	len = get_len(G);
-
 	/* Create and enable userfaultfd object */
 	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK);
 	if (uffd == -1) errExit("userfaultfd");
@@ -206,17 +205,30 @@ int main(int argc, char *argv[]){
 	handling by the userfaultfd object. In mode, we request to track
 	missing pages (i.e., pages that have not yet been faulted in). */
 
+	int fd = open(argv[1],O_RDWR, (mode_t)0600);
+
+	struct graph* app_G = Graph(fd);
+	len = get_len(app_G);
+
+	ul size_of_offset = sizeof(ul)*app_G->off;
+
 	printf("the length of the graph is %d\n", len);
 
 	addr = mmap(NULL, len, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	
-	//fucky copying over to register region
-	memcpy(addr,G->map,len);
-	G->map = (unsigned long*) addr;
+	/*
+	Up to Linux kernel 4.11, only private anonymous ranges are compatible
+       for registering with UFFDIO_REGISTER.`
+	*/
+	//copy the header over
 
-	uffdio_register.range.start = (unsigned long) addr+sizeof(unsigned long)*G->off;
-	uffdio_register.range.len = len - sizeof(unsigned long)*G->off;
+	struct graph* handler_G = Graph(fd); 
+	memcpy(addr,handler_G->map,size_of_offset);
+	app_G->map = (ul*) addr;
+
+	//Register Adjacency List Region (empty region of anon file)
+	uffdio_register.range.start = (ul) addr + size_of_offset;
+	uffdio_register.range.len = len - size_of_offset;
 	uffdio_register.mode = UFFDIO_REGISTER_MODE_MISSING;
 	if (ioctl(uffd, UFFDIO_REGISTER, &uffdio_register) == -1)
 		errExit("ioctl-UFFDIO_REGISTER");
@@ -225,7 +237,7 @@ int main(int argc, char *argv[]){
 
 	struct handler_arg* hargs = malloc(sizeof(struct handler_arg));
 
-	hargs->g = G;
+	hargs->g = handler_G;
 	hargs->uffd = uffd;
 	pthread_mutex_t mxq;
 	pthread_mutex_init(&mxq,NULL);
@@ -238,13 +250,22 @@ int main(int argc, char *argv[]){
 		errExit("pthread_create");
 	}
 
+
+	/*
+	printf("invalidating addr\n");
+	msync(addr,len,MS_SYNC|MS_INVALIDATE);
+	msync(G->map,len,MS_SYNC|MS_INVALIDATE);
+	*/
+
 	//Application code goes here
-	bfs(G,1);
+	bfs(app_G,1);
 
 	pthread_mutex_unlock(&mxq);
 	pthread_join(thr,NULL);
 	
-	close_graph(G);	
+
+	//TODO probably add some proper clean up so the proper regions get resynced with disk
+	close_graph(app_G);	
 
 	if(munmap(addr,len) == -1){
 		perror("error unmapping addr");
