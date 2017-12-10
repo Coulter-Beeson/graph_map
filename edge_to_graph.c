@@ -162,11 +162,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	
-	//print_graph(my_graph);
+	print_graph(my_graph);
 
 	close_graph(my_graph);
 
-	struct graph* g2 = Graph(fd);
+	//struct graph* g2 = Graph(fd);
 
 	//print_graph(g2);
 	//close_graph(g2);	

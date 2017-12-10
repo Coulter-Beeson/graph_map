@@ -209,7 +209,7 @@ void queue_print( const struct queue* ps )
     }
     }
  
-  printf("------------------\n");
+  printf("\n");
 }
  
  
@@ -217,7 +217,7 @@ void queue_print_element(const struct vertex* p )
 {
   if( p ) 
     {
-      printf("%d\n", p->num);
+      printf("%d ", p->num);
     }
   else
     {
