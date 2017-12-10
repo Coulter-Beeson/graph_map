@@ -30,6 +30,7 @@ typedef unsigned long ul;
 struct handler_arg{
 	struct graph* g;
 	long uffd;
+	ul* start;
 	pthread_mutex_t* lock;
 };
 
@@ -56,16 +57,19 @@ static void * fault_handler_thread(void *arg){
 	ssize_t nread;
 
 	struct handler_arg* hargs = (struct handler_arg*) arg;
+	ul* start_addr;
+
 
 	//force output
 	setvbuf(stdout, NULL, _IOLBF, 0);
 
 	G = hargs->g;
 	uffd = hargs->uffd;
+	start_addr = hargs->start;
 
 	printf("uffd number: %d\n", uffd);
-	
 	print_graph(G);
+	printf("start address of region %p\n", start_addr);
 
 	/* Create a page that will be copied into the faulting region */
 
@@ -126,7 +130,7 @@ static void * fault_handler_thread(void *arg){
 		//if we fault in here is it just regular fault handling?
 		//Even if thats the case we batch all of our faults at once 
 		ul b_addr = msg.arg.pagefault.address;
-		ul offset = b_addr-( (ul) G->map)-(sizeof(ul)*G->off);
+		ul offset = b_addr-( (ul) start_addr)-(sizeof(ul)*G->off);
 		offset = (offset/sizeof(ul)) % G->D;
 
 		ul faulting_node = get_node_from_off(G,offset);
@@ -135,9 +139,7 @@ static void * fault_handler_thread(void *arg){
 		//TODO This ittself shoud fault
 		ul* nbrs = get_nbrs(G,faulting_node);
 		
-
 		memset(page, 'A' + fault_cnt % 20, page_size);
-
 
 		fault_cnt++;
 
@@ -239,6 +241,7 @@ int main(int argc, char *argv[]){
 
 	hargs->g = handler_G;
 	hargs->uffd = uffd;
+	hargs->start = (ul*) addr;
 	pthread_mutex_t mxq;
 	pthread_mutex_init(&mxq,NULL);
 	pthread_mutex_lock(&mxq);	
