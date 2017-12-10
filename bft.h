@@ -16,7 +16,7 @@ void bfs(struct graph*,int);
 
 bool is_empty(struct queue*);
 bool queue_add_element( struct queue*, const int);
-unsigned long pop(struct queue*);
+int pop(struct queue*);
 bool queue_remove_element( struct queue*);
 struct queue* queue_new(void);
 struct queue* queue_free( struct queue* );

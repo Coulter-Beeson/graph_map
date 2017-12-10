@@ -16,7 +16,7 @@
 #include "bft.h"
 
 
-/* 
+ 
 int main(int argc, char* argv[])
 {
 	printf("starting BFS");
@@ -42,14 +42,14 @@ int main(int argc, char* argv[])
 
 	print_graph(G);
 
-	unsigned long start_node= strtoul(argv[2],NULL,10); 
+	int start_node= strtoul(argv[2],NULL,10); 
 
 	printf("calling BFS\n");
 
 	bfs(G,start_node);
 
 	return 0;
-}*/
+}
 
 
 void bfs(struct graph* G, int u){
@@ -70,7 +70,7 @@ void bfs(struct graph* G, int u){
 	while(!is_empty(q)){
 		curr_node = pop(q);
 		if(visited[curr_node]){continue;}		
-		//printf("curr_node %lu\n",curr_node);
+		printf("curr_node %d\n",curr_node);
 		nbrs = get_nbrs(G,curr_node);
 		degree=get_deg(G,curr_node);
 		for(int i=0; i<degree; i++){
@@ -133,7 +133,7 @@ bool queue_add_element(struct queue* s, const int i)
   return true;
 }
 
-unsigned long pop(struct queue* q){
+int pop(struct queue* q){
 	int v = q->head->num;
 	queue_remove_element(q);
 	return v;

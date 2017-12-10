@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-typedef int ul;
+typedef unsigned long ul;
 
 struct graph{
 	int* map; //The underlying mmap'd file
@@ -22,7 +22,7 @@ int* get_nbrs(struct graph* g, int u);
 int get_node_from_off(struct graph*, int off);
 int get_off(struct graph* g, int u);
 int get_deg(struct graph* g, int u);
-int get_len(struct graph* g);
+ul get_len(struct graph* g);
 void inc_deg(struct graph* g, int u);
 void inc_edge_count(struct graph* g, int u, int v);
 
