@@ -134,43 +134,31 @@ static void * fault_handler_thread(void *arg){
 		ul b_addr = msg.arg.pagefault.address;
 		ul offset = b_addr-( (ul) start_addr)-(sizeof(ul)*G->off);
 	
-		printf("offset is %lu\n", offset);
-
 		offset = (offset/sizeof(ul));
-
-		printf("offset is %lu\n", offset);
-		printf("max deg %lu\n", G->D);
-
-
 		offset = offset / G->D;
 
-		printf("offset is %lu\n", offset);
+		//printf("offset is %lu\n", offset);
 
 		ul faulting_node = get_node_from_off(G,offset);
-
 
 		if(faulting_node == 0) {
 			perror("fault_node is zero");
 			exit(EXIT_FAILURE);
 		}
 
-		printf("faulting_node: %d\n", faulting_node);
+		//printf("faulting_node: %d\n", faulting_node);
 
 		ul* nbrs = get_nbrs(G,faulting_node);
-		printf("got nbrs\n");
 
-		int page_num = (offset / page_size) + 1;
-		printf("page num: %d\n" , page_num);
-	
+		int page_num = ((b_addr - ((ul) start_addr))/page_size) ;
 
-		printf("graph map starts at addres %p\n",G->map);
-		printf("copying from address %p\n", ((void *) G->map)+page_num*page_size); 
+		//printf("page_num %d\n", page_num);
 
 		memcpy(page, ((void *)  G->map)+page_num*page_size, page_size);
 
 		fault_cnt++;
 
-		printf("setting up the copy\n");
+		//printf("setting up the copy\n");
 		uffdio_copy.src = (ul) page;
 
 		/* We need to handle page faults in units of pages(!).
@@ -181,12 +169,12 @@ static void * fault_handler_thread(void *arg){
 		uffdio_copy.len = page_size;
 		uffdio_copy.mode = 0;
 		uffdio_copy.copy = 0;
-		printf("calling ioctl\n");
+		//printf("calling ioctl\n");
 		if (ioctl(uffd, UFFDIO_COPY, &uffdio_copy) == -1)
 			errExit("ioctl-UFFDIO_COPY");
 
-		printf("        (uffdio_copy.copy returned %lld)\n",
-			uffdio_copy.copy);
+		//printf("        (uffdio_copy.copy returned %lld)\n",
+		//	uffdio_copy.copy);
 	}
 
 	printf("Faulted a total of %d times \n", fault_cnt);
@@ -295,6 +283,17 @@ int main(int argc, char *argv[]){
 	pthread_mutex_unlock(&mxq);
 	pthread_join(thr,NULL);
 	
+
+	printf("size of page %d\n",page_size);
+
+	printf("size of ul %d\n", sizeof(ul));
+	
+	printf("size of D %lu\n", app_G->D);
+
+	printf("sie of line: %lu\n", sizeof(ul)*app_G->D);
+
+	printf("how many pages per line %lu\n", 1+(sizeof(ul)*app_G->D)/page_size );
+
 
 	//TODO probably add some proper clean up so the proper regions get resynced with disk
 	close_graph(app_G);	

@@ -81,7 +81,8 @@ struct graph* create_graphf(char* file){
 //Closes the graph file and syncs the memory
 //This is required otherwise you're file will not be correct!
 void close_graph(struct graph* g){
-	//printf("Closing graph\n");
+	//printf("Closing graph\n");i
+	//TODO check this length
 	ul length = g->off + g->N*g->D;
 
 	if (msync(g->map, length, MS_SYNC) == -1){
@@ -97,13 +98,13 @@ void close_graph(struct graph* g){
 }
 
 //Linearly scans the adjacency list looking for the entry
-bool get_edge(struct graph* g, ul u, ul v){
-	ul d = get_deg(g,u);
-	ul o = get_off(g,u);
+bool get_edge(struct graph* g, int u, int v){
+	int d = get_deg(g,u);
+	int o = get_off(g,u);
 
-	ul* edges = get_nbrs(g,u);
+	int* edges = get_nbrs(g,u);
 	
-	for(ul i=0; i<d; i++){
+	for(int i=0; i<d; i++){
 		if(edges[i] == v){
 			return true;
 		}
@@ -113,21 +114,21 @@ bool get_edge(struct graph* g, ul u, ul v){
 }
 
 //Icreases the edge count in both the object and the file
-void inc_edge_count(struct graph* g, ul u, ul v){
+void inc_edge_count(struct graph* g, int u, int v){
 	g->M++;
 	g->map[1]++;
 }
 
 //Returns an adjacency list for the given node u
-ul* get_nbrs(struct graph* g, ul u){
+int* get_nbrs(struct graph* g, int u){
 
-	ul o = get_off(g,u);
+	int o = get_off(g,u);
 
 	return &g->map[ g->off + g->D*o ];
 }
 
 //Adds the edge u,v to g
-void add_edge(struct graph* g, ul u, ul v){
+void add_edge(struct graph* g, int u, int v){
 	//printf("Adding edge %d %d in add_edge\n", u,v);
 	//This makes it safe, but slow
 	//if(get_edge(g,u,v)) return;
