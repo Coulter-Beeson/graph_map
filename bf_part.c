@@ -4,6 +4,7 @@
 */
 #include "graph.h"
 //#include "graph_part.h"
+#include "traversals.h"
 #include "bft.h"
 #include <stdio.h>
 #include <stdlib.h>
