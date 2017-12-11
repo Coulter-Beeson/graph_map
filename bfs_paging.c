@@ -20,7 +20,7 @@ Licensed under the GNU General Public License version 2 or later.
 #include <poll.h>
 
 #include "graph.h"
-#include "bft.h"
+#include "traversals.h"
 
 typedef unsigned long ul;
 

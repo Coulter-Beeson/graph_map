@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "bft.h"
+#include "traversals.h"
 
 
 /*
@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
 	return 0;
 }*/
 
+////////////// BFT Stuff //////////////////////////
 
 void bfs(struct graph* G, int u){
 	//TODO: check if node is valid node..ie  it actually exists
@@ -67,7 +68,7 @@ void bfs(struct graph* G, int u){
 	
 	printf("BEGIN TRAVERSAL : \n");
 
-	while(!is_empty(q)){
+	while(!queue_is_empty(q)){
 		curr_node = pop(q);
 		if(visited[curr_node]){continue;}		
 		printf("curr_node %d\n",curr_node);
@@ -89,7 +90,7 @@ void bfs(struct graph* G, int u){
 	free(q);  
 }
 
-bool is_empty(struct queue* q){
+bool queue_is_empty(struct queue* q){
 	return (q->head == NULL);
 }
 
@@ -226,3 +227,132 @@ void queue_print_element(const struct vertex* p )
     }
 }
 
+///////////////////// DFT Stuff /////////////////////////////////////////
+
+bool stack_push(struct stack* s, const unsigned long i)
+{
+  struct vertex* p = malloc( 1 * sizeof(*p) );
+ 
+  if( NULL == p )
+    {
+      fprintf(stderr, "IN %s, %s: malloc() failed\n", __FILE__, "list_add");
+      return false; 
+    }
+ 
+
+  if( NULL == s )
+    {
+      printf("Stack not initialized\n");
+      free(p);
+      return false;
+    }
+    
+  p->num = i;
+  p->next = s->head;
+  s->head = p;
+  return true;
+}
+ 
+/* This is a stack and it is LIFO, so we will always remove the first element */
+struct vertex* stack_pop(struct stack* s )
+{
+  struct vertex* h = NULL;
+  struct vertex* p = NULL;
+ 
+  if( NULL == s )
+    {
+      printf("stack is null\n");
+      return NULL;
+    }
+    
+    
+  else if( NULL == s->head)
+    {
+      printf("stack is empty\n");
+      return NULL;
+    }
+    
+  h = s->head;
+  p = h->next;
+  //free(h);
+  s->head = p;
+    
+  return h;
+}
+
+/* -------small helper fucntions ---------- */
+struct stack* stack_free( struct stack* s )
+{
+  while( s->head != NULL)
+    {
+      struct vertex* x= stack_pop(s);
+      free(x);
+    }
+ 
+  return s;
+}
+ 
+struct stack* stack_new(void)
+{
+  struct stack* p = malloc( 1 * sizeof(*p));
+ 
+  if( NULL == p )
+    {
+      fprintf(stderr, "LINE: %d, malloc() failed\n", __LINE__);
+    }
+ 
+  p->head  = NULL;
+   
+  return p;
+}
+ 
+void dft(struct graph* G,int u){
+
+	printf("Traversing from node %lu \n", u);
+	struct stack* st = stack_new();
+	stack_push(st, u);//add initial node to stack. 
+		
+	//TODO: check if node is valid node..ie  it actually exists
+	int i, degree, curr_node;
+	int nbrs;
+	
+	int count = 0; //for testing, to see how manny nodes were visited
+	bool* visited = malloc(sizeof(bool)*(G->N+1));
+	memset(visited, false, sizeof visited);
+	
+	
+	printf("BEGIN TRAVERSAL : \n");
+	
+	while(st->head != NULL){
+			// Pop a vertex from stack and print it
+			curr_node = stack_pop(st)->num;
+			
+			
+			if(!visited[curr_node]){
+				printf(" %d \n", curr_node); 
+				visited[curr_node]=true;
+				count++;
+			}
+			
+			//Get adjacent vertices and push it to stack if it's not visited
+			
+			nbrs = get_nbrs(G,curr_node);
+			degree = get_deg(G, curr_node);
+			for(i=0;i< degree;i=i+1){
+				if(!visited[nbrs[i]]){
+					stack_push(st, nbrs[i]);
+					
+				}
+			}
+	}
+		 		
+	   
+	printf("---- END TRAVERSAL ---- \n");
+	printf("Total nodes visited = %d\n", count);
+
+	//cleanup
+	stack_free(st);   // always remember to free() the malloc()ed memory 
+	free(st); 
+}	
+
+///////////////////////// Triangle Counting Stuff ///////////////////////////////////////
