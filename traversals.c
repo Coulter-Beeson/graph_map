@@ -314,12 +314,18 @@ void dft(struct graph* G,int u){
 		
 	//TODO: check if node is valid node..ie  it actually exists
 	int i, degree, curr_node;
-	int nbrs;
+	int* nbrs;
 	
 	int count = 0; //for testing, to see how manny nodes were visited
-	bool* visited = malloc(sizeof(bool)*(G->N+1));
-	memset(visited, false, sizeof visited);
+	//bool* visited = malloc(sizeof(bool)*(G->N+1));
+	//memset(visited, false, sizeof visited);
+	int N = G->N;
+	int visited[N+1];
 	
+	//all nodes are unvisited
+	for (int i = 0; i <= N; i++){
+		visited[i] = 0;
+	}
 	
 	printf("BEGIN TRAVERSAL : \n");
 	
@@ -328,7 +334,7 @@ void dft(struct graph* G,int u){
 			curr_node = stack_pop(st)->num;
 			
 			
-			if(!visited[curr_node]){
+			if(visited[curr_node]==0){
 				printf(" %d \n", curr_node); 
 				visited[curr_node]=true;
 				count++;
@@ -339,7 +345,7 @@ void dft(struct graph* G,int u){
 			nbrs = get_nbrs(G,curr_node);
 			degree = get_deg(G, curr_node);
 			for(i=0;i< degree;i=i+1){
-				if(!visited[nbrs[i]]){
+				if(visited[nbrs[i]]==0){
 					stack_push(st, nbrs[i]);
 					
 				}

@@ -17,8 +17,14 @@ e2g: graph.c edge_to_graph.c
 dft: graph.c dft.c
 	gcc -std=c99 graph.c dft.c -o dft -lm
 	
-bfpart: graph.c bft.c bf_part.c
-	gcc -std=gnu99 graph.c bft.c bf_part.c -o bfpart -lm
+traversals: graph.c traversals.c
+	gcc -std=c99 graph.c traversals.c -o traversals -lm
+	
+bfpart: graph.c traversals.c bf_part.c
+	gcc -std=gnu99 graph.c traversals.c bf_part.c -o bfpart -lm
+
+dfpart: graph.c traversals.c df_part.c
+	gcc -std=gnu99 graph.c traversals.c df_part.c -o dfpart -lm
 
 write: graph.c write_graph.c
 	gcc -std=gnu99 graph.c write_graph.c -o write -lm
