@@ -19,3 +19,6 @@ dft: graph.c dft.c
 	
 bfpart: graph.c bft.c bf_part.c
 	gcc -std=gnu99 graph.c bft.c bf_part.c -o bfpart -lm
+
+write: graph.c write_graph.c
+	gcc -std=gnu99 graph.c write_graph.c -o write -lm
