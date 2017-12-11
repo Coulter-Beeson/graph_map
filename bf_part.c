@@ -5,7 +5,7 @@
 #include "graph.h"
 //#include "graph_part.h"
 #include "traversals.h"
-#include "bft.h"
+//#include "bft.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
 	
 	printf("BEGIN TRAVERSAL : \n");
 
-	while(!is_empty(q)){
+	while(!queue_is_empty(q)){
 		//queue_print(q);
 		curr_node = pop(q);
 			
