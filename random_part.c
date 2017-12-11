@@ -49,19 +49,20 @@ int main(int argc, char* argv[]){
 
 	int v;
 
-	printf("shuffling %d times\n",K);
+	//printf("shuffling %d times\n",K);
 
 	for(int i=0; i<K; i++){
-		printf("shuffle %d of %d\n",i,K);
+		//printf("shuffle %d of %d\n",i,K);
 		for(int j=1; j<=N ;j++){
 
 			v = 1 + rand() % N;
-			printf("swapping %d and %d\n",j, v);
+			//printf("swapping %d and %d\n",j, v);
 			swap_nodes(g, j, v);
 		}
 	}
-
-	printf("closing graph");
+	
+	print_graph(g);
+	//printf("closing graph");
 	close_graph(g);
 
 	return 0;
