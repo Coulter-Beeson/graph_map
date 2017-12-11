@@ -16,7 +16,7 @@
 #include "bft.h"
 
 
- 
+/*
 int main(int argc, char* argv[])
 {
 	printf("starting BFS");
@@ -49,13 +49,13 @@ int main(int argc, char* argv[])
 	bfs(G,start_node);
 
 	return 0;
-}
+}*/
 
 
 void bfs(struct graph* G, int u){
 	//TODO: check if node is valid node..ie  it actually exists
 	
-	printf("Traversing from node %lu \n", u);
+	printf("Traversing from node %d \n", u);
 	struct queue* q = queue_new();
 	queue_add_element(q, u); 
 
@@ -74,6 +74,7 @@ void bfs(struct graph* G, int u){
 		nbrs = get_nbrs(G,curr_node);
 		degree=get_deg(G,curr_node);
 		for(int i=0; i<degree; i++){
+			//printf("adding nbr %d\n", nbrs[i]);
 			queue_add_element(q,nbrs[i]);
 		}
 		visited[curr_node]=true;

@@ -65,7 +65,7 @@ struct graph* Graph(int fd){
 	//printf("the number of pages for the header is %d\n",num_pages);
 
 	//The off set from which the adjacency lists start
-	g->off = (num_pages*page_size)/sizeof(ul);
+	g->off = (num_pages*page_size)/sizeof(int);
 	//printf("The offset is: %d\n", g->off);
 
 	//printf("returning graph\n");
