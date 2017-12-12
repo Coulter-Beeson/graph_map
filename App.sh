@@ -52,16 +52,20 @@ clean_up
 #################################################
 
 #fb- dataset
+build_fb(){
 ./e2g edgeLists/fb_new2.txt 3997 85096 346 Gfiles/fb/fb_graph.g
+}
 
 #star and complete
-declare -i D
+
 declare -i COUNTER
+declare -a D=('2' '4' '8' '16' '32' '64' '128' '256' '512');
+
 COUNTER=0
-         while [  $COUNTER -lt 5 ]; do
-             D=$((1+ RANDOM %300))
-			 ./write $D 1
-			 ./write $D 2
+         while [  $COUNTER -lt 9 ]; do
+             #D=$((1+ RANDOM %300))
+			 ./write ${D[$COUNTER]} 1
+			 ./write ${D[$COUNTER]} 2
              let COUNTER=COUNTER+1 
          done
 
@@ -78,6 +82,7 @@ COUNTER=0
 		##################################################
 		# Run bfs and dfs with bfs_partition
 		##################################################
+		
 		for file in $GFILES/*.g;do
 			echo "changing to bfs partition: $file " 
 			 ./bfpart "$file" 1
@@ -121,7 +126,7 @@ COUNTER=0
 		##################################################
 		for file in $GFILES/*.g;do
 			echo "changing to bfs partition: $file " 
-			 ./rand "$file" 1  
+			 ./rand "$file" 100  
 		done
 
 
@@ -145,17 +150,20 @@ declare -i NODE
 file="$GFILES/fb/fb_graph.g"
 
 COUNTER=0
-while [  $COUNTER -lt 5 ]; do
+while [  $COUNTER -lt 10 ]; do
 	NODE=$((1+ RANDOM %1000))
 	#with random partition
-        ./rand "$file" $NODE   
+		build_fb
+        ./rand "$file" 100   
 		./app "$file" 1 $NODE "$OUTPUT/fb/plots_bfs_randpart.txt"
 		./app "$file" 2 $NODE "$OUTPUT/fb/plots_dfs_randpart.txt"
 	#with bfs partition
+		build_fb
         ./bfpart "$file" $NODE   
 		./app "$file" 1 $NODE "$OUTPUT/fb/plots_bfs_bfpart.txt"
 		./app "$file" 2 $NODE "$OUTPUT/fb/plots_dfs_bfpart.txt"
 	#with dfs partition
+		build_fb
         ./dfpart "$file" $NODE   
 		./app "$file" 1 $NODE "$OUTPUT/fb/plots_bfs_dfpart.txt"
 		./app "$file" 2 $NODE "$OUTPUT/fb/plots_dfs_dfpart.txt"
