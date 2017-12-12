@@ -20,8 +20,10 @@ int main(int argc, char* argv[]){
 
 	char strlist[20];
 	char strgraph[20];
-	strcpy(strlist, argv[1]);
-	strcpy(strgraph, argv[1]);
+	strcpy(strlist,"edgeLists/" );
+	strcpy(strgraph,"Gfiles/" );
+	strcat(strlist, argv[1]);
+	strcat(strgraph, argv[1]);
 	printf("%s\n", strlist);
 	int mode = atoi(argv[2]);
 	int D = atoi(argv[1]);

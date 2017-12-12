@@ -66,12 +66,12 @@ void bfs(struct graph* G, int u){
 	bool* visited = malloc(sizeof(bool)*(G->N+1));
 	memset(visited, false, sizeof visited);
 	
-	printf("BEGIN TRAVERSAL : \n");
+	//printf("BEGIN TRAVERSAL : \n");
 
 	while(!queue_is_empty(q)){
 		curr_node = pop(q);
 		if(visited[curr_node]){continue;}		
-		printf("curr_node %d\n",curr_node);
+		//printf("curr_node %d\n",curr_node);
 		nbrs = get_nbrs(G,curr_node);
 		degree=get_deg(G,curr_node);
 		for(int i=0; i<degree; i++){
@@ -82,7 +82,7 @@ void bfs(struct graph* G, int u){
 		count++;
 	}
 
-	printf("---- END TRAVERSAL ---- \n");
+	//printf("---- END TRAVERSAL ---- \n");
 	printf("Total nodes visited = %d\n", count);
 
 	//Clean Up
@@ -327,7 +327,7 @@ void dft(struct graph* G,int u){
 		visited[i] = 0;
 	}
 	
-	printf("BEGIN TRAVERSAL : \n");
+	//printf("BEGIN TRAVERSAL : \n");
 	
 	while(st->head != NULL){
 			// Pop a vertex from stack and print it
@@ -335,7 +335,7 @@ void dft(struct graph* G,int u){
 			
 			
 			if(visited[curr_node]==0){
-				printf(" %d \n", curr_node); 
+				//printf(" %d \n", curr_node); 
 				visited[curr_node]=true;
 				count++;
 			}
@@ -353,7 +353,7 @@ void dft(struct graph* G,int u){
 	}
 		 		
 	   
-	printf("---- END TRAVERSAL ---- \n");
+	//printf("---- END TRAVERSAL ---- \n");
 	printf("Total nodes visited = %d\n", count);
 
 	//cleanup

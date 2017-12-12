@@ -28,7 +28,7 @@ int main(int argc, char* argv[]){
 	//The node to start on
 	int K = atoi(argv[2]);
 
-	printf("Opening file\n");
+	//printf("Opening file\n");
 
 	int fd;
 	fd = open(argv[1], O_RDWR, (mode_t)0600);
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]){
 		exit(EXIT_FAILURE);
 	}
 
-	printf("creating graph\n");
+	//printf("creating graph\n");
 	struct graph* g = Graph(fd);
 
 	//Seed the RNG with the current time
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]){
 	int curr_node,degree;
 	int order = 0; //for testing, to see how manny nodes were visited
 	
-	printf("BEGIN TRAVERSAL : \n");
+	//printf("BEGIN TRAVERSAL : \n");
 
 	while(st->head != NULL){
 		//queue_print(q);
@@ -85,16 +85,16 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	printf("---- END TRAVERSAL ---- \n");
-	printf("Total nodes visited = %d\n", order);
+	//printf("---- END TRAVERSAL ---- \n");
+	//printf("Total nodes visited = %d\n", order);
 
 	//Clean Up
 	stack_free(st); 
 	free(st);  
 	
-	print_graph(g);
+	//print_graph(g);
 	
-	printf("closing graph");
+	//printf("closing graph");
 	close_graph(g);
 	close(fd);
 

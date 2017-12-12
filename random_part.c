@@ -36,7 +36,7 @@ int main(int argc, char* argv[]){
 		exit(EXIT_FAILURE);
 	}
 
-	printf("creating graph\n");
+	//printf("creating graph\n");
 	struct graph* g = Graph(fd);
 
 	//Seed the RNG with the current time
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]){
 		}
 	}
 	
-	print_graph(g);
+	//print_graph(g);
 	//printf("closing graph");
 	close_graph(g);
 

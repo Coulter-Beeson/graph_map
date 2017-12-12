@@ -127,9 +127,9 @@ static void * fault_handler_thread(void *arg){
 
 		/* Display info about the page-fault event */
 
-		printf("    UFFD_EVENT_PAGEFAULT event: ");
-		printf("flags = %llx; ", msg.arg.pagefault.flags);
-		printf("address = %llx\n", msg.arg.pagefault.address);
+		//printf("    UFFD_EVENT_PAGEFAULT event: ");
+		//printf("flags = %llx; ", msg.arg.pagefault.flags);
+		//printf("address = %llx\n", msg.arg.pagefault.address);
 
 		/* Copy the page pointed to by 'page' into the faulting
 		region. Vary the contents that are copied in, so that it
@@ -186,7 +186,7 @@ static void * fault_handler_thread(void *arg){
 	}
 
 	printf("Faulted a total of %d times \n", fault_cnt);
-	fprintf(hargs->outfile," %s default-partition %d \n",hargs->g_name, fault_cnt);
+	fprintf(hargs->outfile," %s --- %d \n",hargs->g_name, fault_cnt);
 
 	if(munmap(page,page_size) == -1){
 		perror("error unmapping page");
@@ -316,15 +316,15 @@ void runBFT(int fd,int node ,  char *graph_name, char *outputfile_name){
 	
 	fclose(output);
 	
-	printf("size of page %d\n",page_size);
+	//printf("size of page %d\n",page_size);
 
-	printf("size of int %d\n", sizeof(int));
+	//printf("size of int %d\n", sizeof(int));
 	
 	printf("size of D %d\n", app_G->D);
 
-	printf("sie of line: %d\n", sizeof(int)*app_G->D);
+	//printf("sie of line: %d\n", sizeof(int)*app_G->D);
 
-	printf("how many pages per line %d\n", 1+(sizeof(int)*app_G->D)/page_size );
+	//printf("how many pages per line %d\n", 1+(sizeof(int)*app_G->D)/page_size );
 	if(munmap(addr,len) == -1){
 		perror("error unmapping addr");
 		exit(EXIT_FAILURE);
@@ -430,15 +430,15 @@ void runDFT(int fd,int node,  char *graph_name, char *outputfile_name){
 	
 	fclose(output);
 	
-	printf("size of page %d\n",page_size);
+	//printf("size of page %d\n",page_size);
 
-	printf("size of int %d\n", sizeof(int));
+	//printf("size of int %d\n", sizeof(int));
 	
 	printf("size of D %d\n", app_G->D);
 
-	printf("sie of line: %d\n", sizeof(int)*app_G->D);
+	//printf("sie of line: %d\n", sizeof(int)*app_G->D);
 
-	printf("how many pages per line %d\n", 1+(sizeof(int)*app_G->D)/page_size );
+	//printf("how many pages per line %d\n", 1+(sizeof(int)*app_G->D)/page_size );
 	if(munmap(addr,len) == -1){
 		perror("error unmapping addr");
 		exit(EXIT_FAILURE);

@@ -1,2 +1,0 @@
- Gfiles/bf_fb_new (copy).g default-partition 1992 
- Gfiles/bf_fb_new.g default-partition 1992 
