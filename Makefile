@@ -1,6 +1,6 @@
 
-bfsp: graph.c traversals.c bfs_paging.c
-	gcc -pthread -std=c99 graph.c traversals.c bfs_paging.c -o bfsp -lm
+app: graph.c traversals.c app_paging.c
+	gcc -pthread -std=c99 graph.c traversals.c app_paging.c -o app -lm
 
 bft: graph.c bft.c
 	gcc -std=c99 graph.c bft.c -o bft -lm

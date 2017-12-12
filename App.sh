@@ -30,22 +30,22 @@ done
 
 
 clean_up
-
+make app
 ###############################################################################
 # Run the main prog. app_type for BFT is 1, DFT is 2
-# ./bfsp <graph.g> <app_type> <node_num>
+# ./app <graph.g> <app_type> <node_num> <output_filename.txt>
 # Eg:
-# ./bfsp "my_graph.g" 1 467
+# ./app "my_graph.g" 1 467 <plot_dft.txt>
 ###############################################################################
 
 for file in $GFILES/*.g;do
 	echo "running $file " 
-	 ./bfsp "$file" 1 210 
+	 ./app "$file" 1 210 "$OUTPUT/plots_bfs_bfspart.txt"
 done
 
 for file in $GFILES/*.g;do
 	echo "running $file " 
-	 ./bfsp "$file" 2 210
+	 ./app "$file" 2 210 "$OUTPUT/plots_dfs_bfspart.txt"
 done
 echo "###### Done.. exiting ####"
 

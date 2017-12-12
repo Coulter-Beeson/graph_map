@@ -30,8 +30,8 @@ typedef unsigned long ul;
 
 #define BFT     ((const char *)"BFT")
 #define DFT     ((const char *)"DFT")
-void runDFT(int fd,int node,  char *graph_name);
-void runDFT(int fd,int node,  char *graph_name);
+void runDFT(int fd,int node,  char *graph_name, char *outputfile_name);
+void runDFT(int fd,int node,  char *graph_name, char *outputfile_name);
 
 struct handler_arg{
 	struct graph* g;
@@ -202,8 +202,8 @@ int main(int argc, char *argv[]){
 	//force print everything
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	
-	if (argc != 4) {
-		fprintf(stderr, "Usage: %s my_graph app_type(int) \n", argv[0]);
+	if (argc != 5) {
+		fprintf(stderr, "Usage: %s my_graph app_type(int) node outputfilename \n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
@@ -211,16 +211,16 @@ int main(int argc, char *argv[]){
 	int app_type= atoi(argv[2]);
 	int node= atoi(argv[3]);
 	if(app_type == 1)
-		runBFT(fd, node, argv[1] );
+		runBFT(fd, node, argv[1], argv[4] );
 	else if (app_type == 2)
-		runDFT(fd, node, argv[1] );
+		runDFT(fd, node, argv[1], argv[4] );
 	//TODO probably add some proper clean up so the proper regions get resynced with disk
 	
 	exit(EXIT_SUCCESS);
 }
 
 
-void runBFT(int fd,int node ,  char *graph_name){
+void runBFT(int fd,int node ,  char *graph_name, char *outputfile_name){
 	long uffd;          /* userfaultfd file descriptor */
 	char *addr;         /* Start of region handled by userfaultfd */
 	ul len;  /* Length of region handled by userfaultfd */
@@ -231,7 +231,7 @@ void runBFT(int fd,int node ,  char *graph_name){
 
 	struct graph* app_G = Graph(fd);
 	FILE *output;
-	output = fopen("output/plotdata_BFT.txt", "a"); 
+	output = fopen(outputfile_name, "a"); 
 	if (output == NULL){
 		perror("error on opening file");
 		return(-1);
@@ -330,10 +330,11 @@ void runBFT(int fd,int node ,  char *graph_name){
 		exit(EXIT_FAILURE);
 	}
  	close_graph(app_G);	
+	close(fd);
 }
 
 
-void runDFT(int fd,int node,  char *graph_name){
+void runDFT(int fd,int node,  char *graph_name, char *outputfile_name){
 	long uffd;          /* userfaultfd file descriptor */
 	char *addr;         /* Start of region handled by userfaultfd */
 	ul len;  /* Length of region handled by userfaultfd */
@@ -344,7 +345,7 @@ void runDFT(int fd,int node,  char *graph_name){
 
 	
 	FILE *output;
-	output = fopen("output/plotdata_DFT.txt", "a"); 
+	output = fopen(outputfile_name, "a"); 
 	if (output == NULL){
 		perror("error on opening file");
 		return(-1);
