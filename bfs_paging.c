@@ -18,6 +18,7 @@ Licensed under the GNU General Public License version 2 or later.
 #include <sys/syscall.h>
 #include <sys/ioctl.h>
 #include <poll.h>
+#include <sys/stat.h>
 
 #include "graph.h"
 #include "traversals.h"
@@ -27,11 +28,18 @@ typedef unsigned long ul;
 #define errExit(msg)    do { perror(msg); exit(EXIT_FAILURE); \
 } while (0)
 
+#define BFT     ((const char *)"BFT")
+#define DFT     ((const char *)"DFT")
+void runDFT(int fd,int node,  char *graph_name);
+void runDFT(int fd,int node,  char *graph_name);
+
 struct handler_arg{
 	struct graph* g;
 	long uffd;
 	void* start;
 	pthread_mutex_t* lock;
+	FILE *outfile;
+	char* g_name;
 };
 
 static int page_size;
@@ -178,6 +186,7 @@ static void * fault_handler_thread(void *arg){
 	}
 
 	printf("Faulted a total of %d times \n", fault_cnt);
+	fprintf(hargs->outfile," %s default-partition %d \n",hargs->g_name, fault_cnt);
 
 	if(munmap(page,page_size) == -1){
 		perror("error unmapping page");
@@ -187,7 +196,31 @@ static void * fault_handler_thread(void *arg){
 	return NULL;	
 }
 
+
 int main(int argc, char *argv[]){
+	
+	//force print everything
+	setvbuf(stdout, NULL, _IOLBF, 0);
+	
+	if (argc != 4) {
+		fprintf(stderr, "Usage: %s my_graph app_type(int) \n", argv[0]);
+		exit(EXIT_FAILURE);
+	}
+
+	int fd = open(argv[1],O_RDWR, (mode_t)0600);
+	int app_type= atoi(argv[2]);
+	int node= atoi(argv[3]);
+	if(app_type == 1)
+		runBFT(fd, node, argv[1] );
+	else if (app_type == 2)
+		runDFT(fd, node, argv[1] );
+	//TODO probably add some proper clean up so the proper regions get resynced with disk
+	
+	exit(EXIT_SUCCESS);
+}
+
+
+void runBFT(int fd,int node ,  char *graph_name){
 	long uffd;          /* userfaultfd file descriptor */
 	char *addr;         /* Start of region handled by userfaultfd */
 	ul len;  /* Length of region handled by userfaultfd */
@@ -196,12 +229,12 @@ int main(int argc, char *argv[]){
 	struct uffdio_register uffdio_register;
 	int s;
 
-	//force print everything
-	setvbuf(stdout, NULL, _IOLBF, 0);
-
-	if (argc != 2) {
-		fprintf(stderr, "Usage: %s my_graph\n", argv[0]);
-		exit(EXIT_FAILURE);
+	struct graph* app_G = Graph(fd);
+	FILE *output;
+	output = fopen("output/plotdata_BFT.txt", "a"); 
+	if (output == NULL){
+		perror("error on opening file");
+		return(-1);
 	}
 
 	page_size = sysconf(_SC_PAGE_SIZE);
@@ -224,13 +257,9 @@ int main(int argc, char *argv[]){
 	handling by the userfaultfd object. In mode, we request to track
 	missing pages (i.e., pages that have not yet been faulted in). */
 
-	int fd = open(argv[1],O_RDWR, (mode_t)0600);
-
-	struct graph* app_G = Graph(fd);
+	
 	len = get_len(app_G);
-
 	ul size_of_offset = sizeof(int)*app_G->off;
-
 	printf("the length of the graph is %d\n", len);
 
 	addr = mmap(NULL, len, PROT_READ | PROT_WRITE,
@@ -263,6 +292,8 @@ int main(int argc, char *argv[]){
 	pthread_mutex_init(&mxq,NULL);
 	pthread_mutex_lock(&mxq);	
 	hargs->lock = &mxq;
+	hargs->outfile= output;
+	hargs->g_name = graph_name;
 
 	s = pthread_create(&thr, NULL, fault_handler_thread, (void *) hargs);
 	if (s != 0) {
@@ -278,12 +309,13 @@ int main(int argc, char *argv[]){
 	*/
 
 	//Application code goes here
-	bfs(app_G,1);
+	bfs(app_G,node);
 
 	pthread_mutex_unlock(&mxq);
 	pthread_join(thr,NULL);
 	
-
+	fclose(output);
+	
 	printf("size of page %d\n",page_size);
 
 	printf("size of int %d\n", sizeof(int));
@@ -293,15 +325,123 @@ int main(int argc, char *argv[]){
 	printf("sie of line: %d\n", sizeof(int)*app_G->D);
 
 	printf("how many pages per line %d\n", 1+(sizeof(int)*app_G->D)/page_size );
-
-
-	//TODO probably add some proper clean up so the proper regions get resynced with disk
-	close_graph(app_G);	
-
 	if(munmap(addr,len) == -1){
 		perror("error unmapping addr");
 		exit(EXIT_FAILURE);
 	}
-
-	exit(EXIT_SUCCESS);
+ 	close_graph(app_G);	
 }
+
+
+void runDFT(int fd,int node,  char *graph_name){
+	long uffd;          /* userfaultfd file descriptor */
+	char *addr;         /* Start of region handled by userfaultfd */
+	ul len;  /* Length of region handled by userfaultfd */
+	pthread_t thr;      /* ID of thread that handles page faults */
+	struct uffdio_api uffdio_api;
+	struct uffdio_register uffdio_register;
+	int s;
+
+	
+	FILE *output;
+	output = fopen("output/plotdata_DFT.txt", "a"); 
+	if (output == NULL){
+		perror("error on opening file");
+		return(-1);
+	}
+
+	page_size = sysconf(_SC_PAGE_SIZE);
+	
+	/* Create and enable userfaultfd object */
+	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK);
+	if (uffd == -1) errExit("userfaultfd");
+
+	uffdio_api.api = UFFD_API;
+	uffdio_api.features = 0;
+	if (ioctl(uffd, UFFDIO_API, &uffdio_api) == -1)
+		errExit("ioctl-UFFDIO_API");
+
+	/* Create a private anonymous mapping. The memory will be
+	demand-zero paged--that is, not yet allocated. When we
+	actually touch the memory, it will be allocated via
+	the userfaultfd. */
+
+	/* Register the memory range of the mapping we just created for
+	handling by the userfaultfd object. In mode, we request to track
+	missing pages (i.e., pages that have not yet been faulted in). */
+
+	struct graph* app_G = Graph(fd); 	
+	len = get_len(app_G);
+	ul size_of_offset = sizeof(int)*app_G->off;
+	printf("the length of the graph is %d\n", len);
+
+	addr = mmap(NULL, len, PROT_READ | PROT_WRITE,
+		MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	/*
+	Up to Linux kernel 4.11, only private anonymous ranges are compatible
+       for registering with UFFDIO_REGISTER.`
+	*/
+	//copy the header over
+
+	struct graph* handler_G = Graph(fd); 
+	memcpy(addr,handler_G->map,size_of_offset);
+	app_G->map = (int*) addr;
+
+	//Register Adjacency List Region (empty region of anon file)
+	uffdio_register.range.start = (ul) addr + size_of_offset;
+	uffdio_register.range.len = len - size_of_offset;
+	uffdio_register.mode = UFFDIO_REGISTER_MODE_MISSING;
+	if (ioctl(uffd, UFFDIO_REGISTER, &uffdio_register) == -1)
+		errExit("ioctl-UFFDIO_REGISTER");
+
+	/* Create a thread that will process the userfaultfd events */
+
+	struct handler_arg* hargs = malloc(sizeof(struct handler_arg));
+
+	hargs->g = handler_G;
+	hargs->uffd = uffd;
+	hargs->start = (int*) addr;
+	pthread_mutex_t mxq;
+	pthread_mutex_init(&mxq,NULL);
+	pthread_mutex_lock(&mxq);	
+	hargs->lock = &mxq;
+	hargs->outfile= output;
+	hargs->g_name = graph_name;
+
+	s = pthread_create(&thr, NULL, fault_handler_thread, (void *) hargs);
+	if (s != 0) {
+		errno = s;
+		errExit("pthread_create");
+	}
+
+
+	/*
+	printf("invalidating addr\n");
+	msync(addr,len,MS_SYNC|MS_INVALIDATE);
+	msync(G->map,len,MS_SYNC|MS_INVALIDATE);
+	*/
+
+	//Application code goes here
+	dft(app_G,node);
+
+	pthread_mutex_unlock(&mxq);
+	pthread_join(thr,NULL);
+	
+	fclose(output);
+	
+	printf("size of page %d\n",page_size);
+
+	printf("size of int %d\n", sizeof(int));
+	
+	printf("size of D %d\n", app_G->D);
+
+	printf("sie of line: %d\n", sizeof(int)*app_G->D);
+
+	printf("how many pages per line %d\n", 1+(sizeof(int)*app_G->D)/page_size );
+	if(munmap(addr,len) == -1){
+		perror("error unmapping addr");
+		exit(EXIT_FAILURE);
+	}
+	close_graph(app_G);	
+}
+
