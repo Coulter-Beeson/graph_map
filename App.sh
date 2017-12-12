@@ -16,8 +16,9 @@ OUTPUT=output #where main will write the file,need to clear it before running
 mkdir -p $OUTPUT #make output dir if it doesn exist
 mkdir -p $GFILES
 mkdir -p "$GFILES/fb"
+mkdir -p "$GFILES/fb_new"
 mkdir -p "$OUTPUT/fb"
-
+mkdir -p "$OUTPUT/fb_new"
 ###############################################################################
 # clean_up(): Clean up any files created during testing.
 ###############################################################################
@@ -170,6 +171,25 @@ while [  $COUNTER -lt 10 ]; do
 	let COUNTER=COUNTER+1
 done
 
+######################
+#newer fb tests
+######################
 
+for file in "$GFILES/fb_new"/*.g;do
+		echo "working on $file"
+        ./rand "$file" 100   
+		./app "$file" 1 1 "$OUTPUT/fb_new/plots_bfs_randpart.txt"
+		./app "$file" 2 1 "$OUTPUT/fb_new/plots_dfs_randpart.txt"
+	#with bfs partition
+		
+        ./bfpart "$file" 1   
+		./app "$file" 1 1 "$OUTPUT/fb_new/plots_bfs_bfpart.txt"
+		./app "$file" 2 1 "$OUTPUT/fb/plots_dfs_bfpart.txt"
+	#with dfs partition
+		
+        ./dfpart "$file" 1   
+		./app "$file" 1 1 "$OUTPUT/fb_new/plots_bfs_dfpart.txt"
+		./app "$file" 2 1 "$OUTPUT/fb_new/plots_dfs_dfpart.txt"
+done
 echo "###### Done.. exiting ####"
 
