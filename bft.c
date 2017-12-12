@@ -65,16 +65,17 @@ void bfs(struct graph* G, int u){
 	bool* visited = malloc(sizeof(bool)*(G->N+1));
 	memset(visited, false, sizeof visited);
 	
-	printf("BEGIN TRAVERSAL : \n");
+	//printf("BEGIN TRAVERSAL : \n");
 
 	while(!is_empty(q)){
 		curr_node = pop(q);
 		if(visited[curr_node]){continue;}		
 		printf("curr_node %d\n",curr_node);
+		//print_node(G,curr_node);
+		//printf("\n");
 		nbrs = get_nbrs(G,curr_node);
 		degree=get_deg(G,curr_node);
 		for(int i=0; i<degree; i++){
-			//printf("adding nbr %d\n", nbrs[i]);
 			queue_add_element(q,nbrs[i]);
 		}
 		visited[curr_node]=true;

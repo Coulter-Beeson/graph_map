@@ -124,7 +124,12 @@ int* get_nbrs(struct graph* g, int u){
 
 	int o = get_off(g,u);
 
-	return &g->map[ g->off + g->D*o ];
+
+	int* nbrs = &g->map[ g->off + g->D*o ];
+
+	if (o != get_off(g,u)) return &g->map[ g->off + g->D*get_off(g,u) ];
+
+	return nbrs; 
 }
 
 //Adds the edge u,v to g
@@ -233,6 +238,16 @@ void print_graph(struct graph* g){
 
 }
 
+void print_arr(int* arr, int size){
+
+	for(int i=0; i<size; i++){
+		printf("%d",arr[i]);
+		if(i != size-1) printf(",");
+	}
+	printf("\n\n");
+
+}
+
 //Swaps the position of the adjacency lists for u and v
 //Effectively can be used to change which page a node resides on. 
 void swap_nodes(struct graph* g, int u, int v){
@@ -245,27 +260,64 @@ void swap_nodes(struct graph* g, int u, int v){
 
 	//write down the shorter of the two
 	//TODO abstract the body of this if to its own method
+
+
+	int tmp[g->D];
+
+	memset(tmp,0,g->D*sizeof(int));
+
+	/*	
+	printf("beofre\n");
+	print_arr(tmp,g->D);		
+	print_arr(nbr_u,g->D);
+	print_arr(nbr_v,g->D);
+	*/
+
+	memcpy(tmp,nbr_u,g->D*sizeof(int));	
+	memcpy(nbr_u,nbr_v,g->D*sizeof(int));
+	memcpy(nbr_v,tmp,g->D*sizeof(int));
+
+	/*
+	printf("after\n");
+	print_arr(tmp,g->D);		
+	print_arr(nbr_u,g->D);
+	print_arr(nbr_v,g->D);
+	*/
+
+	int tmp_o = get_off(g,u);
+	//printf("settin in h_G %d to off %d\n",u,get_off(g,v));
+	set_off(g,u,get_off(g,v));
+	//printf("settin in h_G %d to off %d\n",v,tmp_o);
+	set_off(g,v,tmp_o);
 	
+/*	
 	if(d_u <= d_v){
-		int tmp[d_u];
-		memcpy(tmp,nbr_u,d_u*sizeof(int));	
-		memcpy(nbr_u,nbr_v,d_v*sizeof(int));
-		memcpy(nbr_v,tmp,d_u*sizeof(int));
+		int tmp[d_u+1];	
+
+		memcpy(tmp,nbr_u,(d_u+1)*sizeof(int));	
+		memcpy(nbr_u,nbr_v,(d_v+1)*sizeof(int));
+		memcpy(nbr_v,tmp,(d_u+1)*sizeof(int));
 
 		int tmp_o = get_off(g,u);
+		printf("settin in h_G %d to off %d\n",u,get_off(g,v));
 		set_off(g,u,get_off(g,v));
+		printf("settin in h_G %d to off %d\n",v,tmp_o);
 		set_off(g,v,tmp_o);
 	}
 	else{
-		int tmp[d_v];		
-		memcpy(tmp,nbr_v,d_v*sizeof(int));	
-		memcpy(nbr_v,nbr_u,d_u*sizeof(int));
-		memcpy(nbr_u,tmp,d_v*sizeof(int));
+		int tmp[d_v+1];		
+		memcpy(tmp,nbr_v,(d_v+1)*sizeof(int));	
+		memcpy(nbr_v,nbr_u,(d_u+1)*sizeof(int));
+		memcpy(nbr_u,tmp,(d_v+1)*sizeof(int));
 
 		int tmp_o = get_off(g,v);
+		printf("settin in h_G %d to off %d\n",v,get_off(g,u));
 		set_off(g,v,get_off(g,u));
+		printf("settin in h_G %d to off %d\n",u,tmp_o);	
 		set_off(g,u,tmp_o);
 	}
+*/
+
 
 }
 /*

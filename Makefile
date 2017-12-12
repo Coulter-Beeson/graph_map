@@ -1,3 +1,8 @@
+dyn: graph.c bft.c dynamic_handle.c
+	gcc -pthread -std=c99 -g graph.c bft.c dynamic_handle.c -o dyn -lm
+
+handle: graph.c bft.c fault_handler.c
+	gcc -pthread -std=c99 graph.c bft.c fault_handler.c -o handle -lm
 
 bfsp: graph.c bft.c bfs_paging.c
 	gcc -pthread -std=c99 graph.c bft.c bfs_paging.c -o bfsp -lm
