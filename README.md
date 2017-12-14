@@ -1,7 +1,7 @@
 # graph_map
 Project : Custom graph data-structure implementation to improve locality in graph applications, that uses userfaultfd API for on-demand paging in user space </br>
 Authors: Coulter Beeson, Laura Cang, Meghana Venkataswamy </br>
-For more details see:  Project Report and class-project Presentation 
+For more details see:  <a href="https://github.com/Coulter-Beeson/graph_map/blob/master/Report%20and%20Presentation/CS508%20-%20Graph%20Map_presentation.pdf">Project Report</a> and class-project <a href="">Presentation </a>
 
 <h2>Requires: </h2>
 <ul>
