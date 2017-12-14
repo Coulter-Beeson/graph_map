@@ -66,7 +66,7 @@ void bfs(struct graph* G, int u){
 	bool* visited = malloc(sizeof(bool)*(G->N+1));
 	memset(visited, false, sizeof visited);
 	
-	//printf("BEGIN TRAVERSAL : \n");
+	printf("BEGIN TRAVERSAL : \n");
 
 	while(!queue_is_empty(q)){
 		curr_node = pop(q);

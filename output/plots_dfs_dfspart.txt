@@ -1,7 +1,11 @@
+ Gfiles/1024-complete.g --- 1025 
+ Gfiles/1024-star.g --- 1025 
  Gfiles/128-complete.g --- 17 
  Gfiles/128-star.g --- 17 
  Gfiles/16-complete.g --- 1 
  Gfiles/16-star.g --- 1 
+ Gfiles/2048-complete.g --- 4098 
+ Gfiles/2048-star.g --- 2050 
  Gfiles/256-complete.g --- 65 
  Gfiles/256-star.g --- 65 
  Gfiles/2-complete.g --- 1 

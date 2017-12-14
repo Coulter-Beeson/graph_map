@@ -46,6 +46,7 @@ make bfpart
 make dfpart
 make rand
 make e2g
+make write
 
 clean_up
 ##################################################
@@ -60,10 +61,10 @@ build_fb(){
 #star and complete
 
 declare -i COUNTER
-declare -a D=('2' '4' '8' '16' '32' '64' '128' '256' '512');
+declare -a D=('2' '4' '8' '16' '32' '64' '128' '256' '512' '1024' '2048');
 
 COUNTER=0
-         while [  $COUNTER -lt 9 ]; do
+         while [  $COUNTER -lt 11 ]; do
              #D=$((1+ RANDOM %300))
 			 ./write ${D[$COUNTER]} 1
 			 ./write ${D[$COUNTER]} 2
@@ -177,7 +178,7 @@ done
 
 for file in "$GFILES/fb_new"/*.g;do
 		echo "working on $file"
-        ./rand "$file" 100   
+        ./rand "$file" 150   
 		./app "$file" 1 1 "$OUTPUT/fb_new/plots_bfs_randpart.txt"
 		./app "$file" 2 1 "$OUTPUT/fb_new/plots_dfs_randpart.txt"
 	#with bfs partition

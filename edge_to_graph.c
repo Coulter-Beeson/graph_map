@@ -31,7 +31,7 @@ unsigned long* map;
 }*/
 
 int main(int argc, char *argv[]) {
-
+	
 	//Expects a name of an file
 	if(argc!=6){
 		perror("fe N M D fd");
@@ -55,16 +55,16 @@ int main(int argc, char *argv[]) {
 	int PAGE_SIZE = sysconf(_SC_PAGESIZE);
 
 	unsigned long header_size = sizeof(int)*(3 + 3*N); //N, M, D(3) [o,d]*N in 
-	printf("The header is %d bytes\n", N, header_size);
-	printf("The pages are %d bytes\n", PAGE_SIZE);
+	//printf("The header is %d bytes\n", N, header_size);
+	//printf("The pages are %d bytes\n", PAGE_SIZE);
 	
-	printf("There are %f header pages\n", (double)header_size/PAGE_SIZE);
+	//printf("There are %f header pages\n", (double)header_size/PAGE_SIZE);
 	
 	double hpages = (double)header_size/PAGE_SIZE;
-	printf("There are %f float header pages\n", hpages);
+	//printf("There are %f float header pages\n", hpages);
 
 	unsigned long num_hpages = ceil(hpages);
-	printf("Which is %d integer header pages\n", num_hpages);
+	//printf("Which is %d integer header pages\n", num_hpages);
 	
 	unsigned long padding = (num_hpages * PAGE_SIZE) - header_size; //in bytes
 	
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 	} //position at end of file
 	
 	double dpages = ((sizeof(int)*D_up + node_data_size))/(double)PAGE_SIZE;
-	printf("There are %f double node pages\n", dpages);
+	//printf("There are %f double node pages\n", dpages);
 	
 	unsigned long num_dpages = ceil(dpages);
 	printf("Which is %d int node pages\n", num_dpages);
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	
-	print_graph(my_graph);
+	//print_graph(my_graph);
 
 	close_graph(my_graph);
 

@@ -24,7 +24,7 @@ int main(int argc, char* argv[]){
 	strcpy(strgraph,"Gfiles/" );
 	strcat(strlist, argv[1]);
 	strcat(strgraph, argv[1]);
-	printf("%s\n", strlist);
+	//printf("%s\n", strlist);
 	int mode = atoi(argv[2]);
 	int D = atoi(argv[1]);
 	int N = D+1;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]){
 	double junk = pow(2,ceil(log2(D)));
 	D_up = junk;
 
-	printf("The upper bound of D is %d\n", D_up);
+	//printf("The upper bound of D is %d\n", D_up);
 	
 	unsigned long node_data_size = sizeof(int)*N*D_up; //in bytes
 
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]){
 	}
 
 	
-	print_graph(my_graph);
+	//print_graph(my_graph);
 
 	close_graph(my_graph);
 
