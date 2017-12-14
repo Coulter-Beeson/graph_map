@@ -42,7 +42,8 @@ int main(int argc, char* argv[]){
 	//Seed the RNG with the current time
 	//srand(time(NULL));
 	//TODO Seeded with a constant for testing
-	srand(1);	
+	time_t t;
+	srand((unsigned) time(&t));	
 
 
 	int N = g->N;
